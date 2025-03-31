@@ -1,4 +1,6 @@
+import {BIGQUERY_ENABLED} from "./utils/config.js";
 import parseCMCDQueryToJson from './parseCMCDQueryToJson.js';
+import saveBigQuery from './bigquery.js';
 
 export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) => {
     const body = {};
@@ -18,6 +20,7 @@ export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) =
         if(body['cmcd_keys'] && body['cmcd_keys']['ts']){
             body['cmcd_keys']['ts-date'] = new Date(body['cmcd_keys']['ts']).toISOString()
         }
+        
         body['cmcd_data'] = rawData;
         
         saveData(body);
@@ -27,4 +30,5 @@ export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) =
 const saveData = async (body) => {
     // TODO: Save data
     console.log (body)
+    saveBigQuery(body);
 }

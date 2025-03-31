@@ -1,8 +1,7 @@
-import { config } from "dotenv";
+import {PORT} from "./utils/config.js";
 import express from "express";
 import cmcdRoutes from "./cmcd.routes.js";
-import cors from 'cors'
-config()
+import cors from 'cors';
 
 const app = express();
 
@@ -15,5 +14,4 @@ app.use((req, res) => {
     res.status(404).json({ message: "Not found" });
   });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT);
