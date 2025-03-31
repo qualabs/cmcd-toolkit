@@ -1,0 +1,19 @@
+{
+  "name": "player",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "dash.all.min.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "serve --cors ."
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "serve": "^14.2.4"
+  }
+}

@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  collector:
+    build: ./collector
+    ports:
+      - "3000:3000" # Expose the collector service on port 3000
+  player:
+    build: ./player
+    ports:
+      - "8080:3000" # Map host port 8080 to container port 3000
+
+
