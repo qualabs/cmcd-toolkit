@@ -5,9 +5,44 @@ services:
     build: ./collector
     ports:
       - "3000:3000" # Expose the collector service on port 3000
+    environment:
+      - BIGQUERY_ENABLED=true
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
+      - BIGQUERY_DATASET=cmcd
+      - BIGQUERY_TABLE=cmcd_v2_data      
+    secrets:
+      - bigquery_secret_json
   player:
     build: ./player
     ports:
       - "8080:3000" # Map host port 8080 to container port 3000
+  prometheus:
+    image: prom/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
+  grafana:
+    image: grafana/grafana
+    ports:
+      - 8081:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_INSTALL_PLUGINS=grafana-bigquery-datasource
+    secrets:
+      - bigquery_secret_pem
+    volumes:
+      - ./grafana:/etc/grafana/provisioning/datasources
 
+volumes:
+  prom_data:
 
+secrets:
+  bigquery_secret_json:
+    file: ./secrets/bigquery_secret.json
+  bigquery_secret_pem:
+    file: ./secrets/bigquery_secret.pem

@@ -1,0 +1,19 @@
+apiVersion: 1
+
+datasources:
+- name: Prometheus
+  type: prometheus
+  url: http://prometheus:9090 
+  isDefault: true
+  access: proxy
+  editable: true
+- name: BigQuery DS
+  type: grafana-bigquery-datasource
+  editable: true
+  enabled: true
+  jsonData:
+    authenticationType: jwt
+    clientEmail: bigquery-data-editor@cmcdv2-bigquery.iam.gserviceaccount.com # Use the correct client email
+    defaultProject: cmcdv2-bigquery # Use your project ID
+    tokenUri: https://oauth2.googleapis.com/token
+    privateKeyPath: '/run/secrets/bigquery_secret_pem'

@@ -1,7 +1,7 @@
 import { BigQuery } from '@google-cloud/bigquery';
-import {BIGQUERY_ENABLED, BIGQUERY_CREDENTIALS, BIGQUERY_DATASET, BIGQUERY_TABLE } from './utils/config.js';
+import {BIGQUERY_ENABLED, BIGQUERY_DATASET, BIGQUERY_TABLE } from './utils/config.js';
 
-const bigquery = new BigQuery({credentials:BIGQUERY_CREDENTIALS});
+const bigquery = new BigQuery();
 
 const saveData = async (body) => {
     if (BIGQUERY_ENABLED){
