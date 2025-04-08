@@ -17,12 +17,20 @@ spec:
       - name: fluentd
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+          - name: FLUENT_UID
+            value: "0"
+        securityContext:
+          runAsUser: 0
         volumeMounts:
+        - name: dockercontainerlogdirectory
+          mountPath: /var/lib/docker/containers
+          readOnly: true
         - name: config-volume
           mountPath: /fluentd/etc/fluent.conf
           subPath: fluent.conf
         - name: varlog
-          mountPath: /var/log/containers
+          mountPath: /var/log
           readOnly: true
       volumes:
       - name: config-volume
@@ -30,4 +38,7 @@ spec:
           name: fluentd-config
       - name: varlog
         hostPath:
-          path: /var/log/containers
+          path: /var/log
+      - name: dockercontainerlogdirectory
+        hostPath:
+          path: /var/lib/docker/containers

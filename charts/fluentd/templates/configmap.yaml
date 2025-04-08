@@ -6,7 +6,7 @@ data:
   fluent.conf: |
     <source>
       @type tail
-      path /var/log/containers/*node-analytics*.log
+      path /var/log/containers/*collector*.log,/var/log/containers/*player*.log
       pos_file /fluentd/pos/node-app.pos
       tag node.app.logs
       <parse>
@@ -31,9 +31,8 @@ data:
       dbname {{ .Values.influxdb.database }}
       measurement {{ .Values.influxdb.measurement }}
       time_precision s
-      tag_keys ["user-agent", "request_ip"]
+      tag_keys ["user-agent", "request_ip", "cmcd_mode"]
       <buffer>
-        @type memory
-        flush_interval 5s
+        flush_interval 60s
       </buffer>
     </match>

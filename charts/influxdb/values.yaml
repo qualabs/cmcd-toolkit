@@ -8,7 +8,7 @@ service:
 
 persistence:
   enabled: true
-  storageClass: ""
-  size: 5Gi
+  storageClass: "standard"
+  size: 1Gi
 
 influxdbDatabase: analytics

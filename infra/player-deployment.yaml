@@ -21,4 +21,4 @@ spec:
         - name: DATA_SINK
           value: "fluentd"
         ports:
-        - containerPort: 3000
+        - containerPort: 3030

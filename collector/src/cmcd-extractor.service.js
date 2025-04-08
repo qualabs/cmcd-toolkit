@@ -5,6 +5,8 @@ import saveBigQuery from './bigquery.js';
 export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) => {
     const body = {};
     const rawData = req?.query['CMCD']
+    console.log("oh fuck")
+    console.log(rawData)
 
     if(rawData){
         const cmcd_keys = parseCMCDQueryToJson(req?.query['CMCD'])
@@ -30,5 +32,5 @@ export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) =
 const saveData = async (body) => {
     // TODO: Save data
     console.log(body)
-    saveBigQuery(body);
+    // saveBigQuery(body);
 }

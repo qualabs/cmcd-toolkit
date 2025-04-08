@@ -18,6 +18,9 @@ spec:
       - name: influxdb
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: INFLUXDB_DB
+          value: "{{ .Values.influxdbDatabase }}"
         ports:
         - containerPort: {{ .Values.service.port }}
         volumeMounts:

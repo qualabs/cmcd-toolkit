@@ -6,4 +6,11 @@ metadata:
     app: grafana
 data:
   datasources.yaml: |
-    {{ toYaml .Values.datasources | indent 4 }}
+    apiVersion: 1
+    datasources:
+      - name: InfluxDB
+        type: influxdb
+        access: proxy
+        url: http://influxdb:8086
+        database: analytics
+        isDefault: true

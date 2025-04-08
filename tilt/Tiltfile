@@ -1,21 +1,21 @@
 # Tiltfile
 
 # Build Docker images for collector and player
-docker_build('collector-image', './collector', dockerfile='Dockerfile')
-docker_build('player-image', './player', dockerfile='Dockerfile')
+docker_build('collector-image', '../collector', dockerfile='../collector/Dockerfile')
+docker_build('player-image', '../player', dockerfile='../player/Dockerfile')
+docker_build('fluentd-custom', '../infra/fluentd-custom', dockerfile='../infra/fluentd-custom/Dockerfile')
 
 # Load Kubernetes manifests for both apps from the infra folder
-k8s_yaml('infra/collector-deployment.yaml')
-k8s_yaml('infra/collector-service.yaml')
-k8s_yaml('infra/player-deployment.yaml')
-k8s_yaml('infra/player-service.yaml')
+k8s_yaml('../infra/collector-deployment.yaml')
+k8s_yaml('../infra/collector-service.yaml')
+k8s_yaml('../infra/player-deployment.yaml')
+k8s_yaml('../infra/player-service.yaml')
 
 # Expose port 3000 for both services for quick access (adjust if needed)
 k8s_resource('collector', port_forwards=3000)
-k8s_resource('player', port_forwards=3000)
+k8s_resource('player', port_forwards=3030)
 
 # Deploy Helm charts via Tilt's helm() integration.
-# Note: Tilt’s helm() function requires tilt 0.20 or later.
-helm_release('influxdb', './charts/influxdb')
-helm_release('fluentd', './charts/fluentd')
-helm_release('grafana', './charts/grafana')
+k8s_yaml(helm('../charts/influxdb'))
+k8s_yaml(helm('../charts/fluentd'))
+k8s_yaml(helm('../charts/grafana'))
