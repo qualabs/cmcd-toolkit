@@ -1,0 +1,25 @@
+image:
+  repository: grafana/grafana
+  tag: "9.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 3000
+
+adminUser: admin
+adminPassword: admin
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: InfluxDB
+        type: influxdb
+        access: proxy
+        url: http://influxdb:8086
+        database: analytics
+        isDefault: true
+
+persistence:
+  enabled: false

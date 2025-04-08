@@ -1,0 +1,12 @@
+image:
+  repository: fluent/fluentd
+  tag: v1.14-1
+  pullPolicy: IfNotPresent
+
+influxdb:
+  host: influxdb
+  port: 8086
+  database: analytics
+  measurement: cmcd_metrics
+
+log_level: info

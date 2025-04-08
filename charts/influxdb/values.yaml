@@ -1,0 +1,14 @@
+image:
+  repository: influxdb
+  tag: "1.8"
+  pullPolicy: IfNotPresent
+
+service:
+  port: 8086
+
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 5Gi
+
+influxdbDatabase: analytics

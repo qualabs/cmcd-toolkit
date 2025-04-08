@@ -1,0 +1,5 @@
+apiVersion: v2
+name: grafana
+description: A minimal Grafana chart with pre-configured datasource.
+version: 0.1.0
+appVersion: "9.0"

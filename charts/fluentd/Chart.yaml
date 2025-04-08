@@ -1,0 +1,5 @@
+apiVersion: v2
+name: fluentd
+description: A custom Fluentd chart to forward logs to InfluxDB.
+version: 0.1.0
+appVersion: "1.0"

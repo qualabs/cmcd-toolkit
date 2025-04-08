@@ -29,6 +29,6 @@ export const cmcdExtractorService = async ({req, reqURI, dateStart, cmcdMode}) =
 
 const saveData = async (body) => {
     // TODO: Save data
-    console.log (body)
+    console.log(body)
     saveBigQuery(body);
 }
