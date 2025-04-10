@@ -6,10 +6,12 @@ services:
     ports:
       - "3000:3000" # Expose the collector service on port 3000
     environment:
-      - BIGQUERY_ENABLED=true
+      - BIGQUERY_ENABLED=false
       - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
       - BIGQUERY_DATASET=cmcd
-      - BIGQUERY_TABLE=cmcd_v2_data      
+      - BIGQUERY_TABLE=cmcd     
+      - PUBSUB_ENABLED=true
+      - PUBSUB_TOPIC_NAME=cmcd
     secrets:
       - bigquery_secret_json
   player:

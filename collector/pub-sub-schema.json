@@ -1,0 +1,381 @@
+{
+  "type": "record",
+  "name": "CMCDData",
+  "fields": [
+    {
+      "name": "request_user_agent",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "The user agent"
+    },
+    {
+      "name": "request_origin",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Origin of the request"
+    },
+    {
+      "name": "request_ip",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "IP of the video player"
+    },
+    {
+      "name": "request_datetime",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    {
+      "name": "cmcd_mode",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "request,response or event"
+    },
+    {
+      "name": "cmcd_key_br",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_ab",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Aggregate encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_bl",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Buffer length (ms)"
+    },
+    {
+      "name": "cmcd_key_tbl",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Target buffer length (ms)"
+    },
+    {
+      "name": "cmcd_key_bs",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Buffer starvation"
+    },
+    {
+      "name": "cmcd_key_bsd",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Buffer starvation duration (ms)"
+    },
+    {
+      "name": "cmcd_key_cdn",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "CDN Id"
+    },
+    {
+      "name": "cmcd_key_cid",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Content ID"
+    },
+    {
+      "name": "cmcd_key_d",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Object duration (ms)"
+    },
+    {
+      "name": "cmcd_key_dl",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Deadline (ms)"
+    },
+    {
+      "name": "cmcd_key_ltc",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Live stream latency (ms)"
+    },
+    {
+      "name": "cmcd_key_mtp",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Measured throughput (kbps)"
+    },
+    {
+      "name": "cmcd_key_nor",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Next object request (list of relative paths)"
+    },
+    {
+      "name": "cmcd_key_ot",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Object type"
+    },
+    {
+      "name": "cmcd_key_pr",
+      "type": [
+        "null",
+        "float"
+      ],
+      "doc": "Playback rate"
+    },
+    {
+      "name": "cmcd_key_rtp",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Requested maximum throughput (kbps)"
+    },
+    {
+      "name": "cmcd_key_rc",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Response code"
+    },
+    {
+      "name": "cmcd_key_sf",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Streaming format"
+    },
+    {
+      "name": "cmcd_key_sid",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Session ID"
+    },
+    {
+      "name": "cmcd_key_bg",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Backgrounded"
+    },
+    {
+      "name": "cmcd_key_sta",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "State"
+    },
+    {
+      "name": "cmcd_key_st",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Stream type"
+    },
+    {
+      "name": "cmcd_key_su",
+      "type": [
+        "null",
+        "boolean"
+      ],
+      "doc": "Startup"
+    },
+    {
+      "name": "cmcd_key_ttfb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Time to first byte (ms)"
+    },
+    {
+      "name": "cmcd_key_ttfbb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Time to first body byte (ms)"
+    },
+    {
+      "name": "cmcd_key_ttlb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Time to last byte (ms)"
+    },
+    {
+      "name": "cmcd_key_ts",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Timestamp (ms since epoch)"
+    },
+    {
+      "name": "cmcd_key_ts_date",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "timestamp string"
+    },
+    {
+      "name": "cmcd_key_tpb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Top playable bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_tb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Top encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_lb",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Lowest encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_tab",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Top aggregated encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_lab",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Lowest aggregated encoded bitrate (kbps)"
+    },
+    {
+      "name": "cmcd_key_url",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Request URL"
+    },
+    {
+      "name": "cmcd_key_pt",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Playhead time (ms)"
+    },
+    {
+      "name": "cmcd_key_ec",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Player error code"
+    },
+    {
+      "name": "cmcd_key_msd",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "Media start delay (ms)"
+    },
+    {
+      "name": "cmcd_key_e",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Event"
+    },
+    {
+      "name": "cmcd_key_cmsdd",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "CMSD Dynamic Header (Base64)"
+    },
+    {
+      "name": "cmcd_key_cmsds",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "CMSD Static Header (Base64)"
+    },
+    {
+      "name": "cmcd_key_v",
+      "type": [
+        "null",
+        "int"
+      ],
+      "doc": "CMCD version"
+    },
+    {
+      "name": "cmcd_data",
+      "type": [
+        "null",
+        "string"
+      ],
+      "doc": "Raw CMCD data"
+    }
+  ]
+}
