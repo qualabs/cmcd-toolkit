@@ -217,14 +217,16 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('useCollectorBtn').addEventListener('click', function() {
-            RESPONSE_MODE_URL = 'http://' + window.location.hostname + ':3000/cmcd/response-mode';
-            EVENT_MODE_URL = 'http://' + window.location.hostname + ':3000/cmcd/event-mode'
+            var collectorBaseURL = 'http://' + window.location.hostname+ ':3000'
+            RESPONSE_MODE_URL = collectorBaseURL + '/cmcd/response-mode';
+            EVENT_MODE_URL = collectorBaseURL + '/cmcd/event-mode'
             init();
         });
             
         document.getElementById('useCollectorGcloudFunctionBtn').addEventListener('click', function() {
-            RESPONSE_MODE_URL = 'http://' + window.location.hostname + ':3001/response';
-            EVENT_MODE_URL = 'http://' + window.location.hostname + ':3001/event'
+            var collectorBaseURL = 'http://' + window.location.hostname+ ':3001'
+            RESPONSE_MODE_URL = collectorBaseURL + '/response';
+            EVENT_MODE_URL = collectorBaseURL + '/event'
             init();
         });
     });
