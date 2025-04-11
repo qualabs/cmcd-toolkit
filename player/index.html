@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>CMCD Reporting</title>
 
-    <script src="./dash.all.min.js"></script>
+    <script src="./lib/dash.all.min.js"></script>
 
     <!-- Bootstrap core CSS -->
     <link href="./lib/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -28,6 +28,8 @@
         /* possible modes of attach cmcd data */
         var CMCD_MODE_QUERY = 'query'; /* as query parameters */
         var CMCD_MODE_HEADER = 'header'; /* as HTTP headers */
+        var RESPONSE_MODE_URL = null
+        var EVENT_MODE_URL = null;
         var player;
 
         function getQueryParam(param) {
@@ -71,7 +73,8 @@
                                 enabled: true, /* enable cmcdv2 response mode. FALSE by default */
                                 mode: CMCD_MODE_QUERY, /* overrides global mode. JSON not supported */
                                 //enabledKeys: ['sid', 'cid', 'ts', 'url', 'br', 'd', 'ot', 'tb', 'v', 'sta', 'ttfb', 'ttlb','rc', 'msd'], /* optional, overrides global keys */
-                                requestUrl: 'http://' + window.location.hostname + ':3000/cmcd/response-mode', /*mandatory, URL to send report */
+                                // requestUrl: 'http://' + window.location.hostname + ':3000/cmcd/response-mode', /*mandatory, URL to send report */
+                                requestUrl: RESPONSE_MODE_URL, /* mandatory, URL to send report */
                                 requestMethod: 'POST', /*optional, get by default */
                                 // enabledKeys: ['br', 'd', 'ot', 'tb' , 'bl', 'dl', 'mtp', 'nor', 'nrr', 'su' , 'bs', 'rtp' , 'cid', 'pr', 'sf', 'sid', 'st', 'v', 'sta', 'ltc', 'msd', 'sta', 'e', 'int']
                             },
@@ -80,7 +83,7 @@
                                 mode: CMCD_MODE_QUERY, /*overrides global mode. JSON not supported */
                                 interval: 10000,  /* time in ms between regular requests. Default 30s or 0 to omit */
                                 //enabledKeys: ['sta', 'sid', 'cid', 'sf', 'v', 'ltc', 'msd', ], /* Currently only supports: 'sta', 'ts', 'sid', 'cid', 'sf', 'v', 'lb', 'pr' */
-                                requestUrl: 'http://' + window.location.hostname + ':3000/cmcd/event-mode', /* mandatory, URL to send report */
+                                requestUrl: EVENT_MODE_URL, /* mandatory, URL to send report */
                                 requestMethod: 'POST',  /* optional, get by default */
                                 // enabledKeys: ['br', 'd', 'ot', 'tb' , 'bl', 'dl', 'mtp', 'nor', 'nrr', 'su' , 'bs', 'rtp' , 'cid', 'pr', 'sf', 'sid', 'st', 'v', 'sta', 'ltc', 'msd', 'sta', 'e', 'int']
                             }
@@ -172,6 +175,12 @@
                  src="../lib/img/dashjs-logo.png"
                  width="200">
         </header>
+
+        <div class="mb-4 text-center"> <!-- Aumentado margen inferior y centrado -->
+            <button type="button" class="btn btn-primary me-2" id="useCollectorBtn">Use Collector</button>
+            <button type="button" class="btn btn-primary" id="useCollectorGcloudFunctionBtn">Use Collector gcloud Function</button>
+        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="h-100 p-5 bg-light border rounded-3">
@@ -207,7 +216,17 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        init();
+        document.getElementById('useCollectorBtn').addEventListener('click', function() {
+            RESPONSE_MODE_URL = 'http://' + window.location.hostname + ':3000/cmcd/response-mode';
+            EVENT_MODE_URL = 'http://' + window.location.hostname + ':3000/cmcd/event-mode'
+            init();
+        });
+            
+        document.getElementById('useCollectorGcloudFunctionBtn').addEventListener('click', function() {
+            RESPONSE_MODE_URL = 'http://' + window.location.hostname + ':3001/response';
+            EVENT_MODE_URL = 'http://' + window.location.hostname + ':3001/event'
+            init();
+        });
     });
 </script>
 <script src="../highlighter.js"></script>

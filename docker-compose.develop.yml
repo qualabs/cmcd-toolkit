@@ -9,6 +9,11 @@ services:
     volumes:
       - ./collector:/app # Collector code is in a 'collector' directory
 
+  collector-gcloud-function:
+    ports:
+      - "3001:8080" # Expose the collector service on port 3000
+    volumes:
+      - ./collector-gcloud-function:/app # Collector code is in a 'collector' directory
 
   player:
     build: ./player
