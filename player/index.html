@@ -28,8 +28,8 @@
         /* possible modes of attach cmcd data */
         var CMCD_MODE_QUERY = 'query'; /* as query parameters */
         var CMCD_MODE_HEADER = 'header'; /* as HTTP headers */
-        var RESPONSE_MODE_URL = null
-        var EVENT_MODE_URL = null;
+
+        var CMCD_COLLECTOR_URL = 'http://' + window.location.hostname + ':3000';
         var player;
 
         function getQueryParam(param) {
@@ -74,7 +74,7 @@
                                 mode: CMCD_MODE_QUERY, /* overrides global mode. JSON not supported */
                                 //enabledKeys: ['sid', 'cid', 'ts', 'url', 'br', 'd', 'ot', 'tb', 'v', 'sta', 'ttfb', 'ttlb','rc', 'msd'], /* optional, overrides global keys */
                                 // requestUrl: 'http://' + window.location.hostname + ':3000/cmcd/response-mode', /*mandatory, URL to send report */
-                                requestUrl: RESPONSE_MODE_URL, /* mandatory, URL to send report */
+                                requestUrl: CMCD_COLLECTOR_URL + '/cmcd/response-mode', /* mandatory, URL to send report */
                                 requestMethod: 'POST', /*optional, get by default */
                                 // enabledKeys: ['br', 'd', 'ot', 'tb' , 'bl', 'dl', 'mtp', 'nor', 'nrr', 'su' , 'bs', 'rtp' , 'cid', 'pr', 'sf', 'sid', 'st', 'v', 'sta', 'ltc', 'msd', 'sta', 'e', 'int']
                             },
@@ -83,7 +83,7 @@
                                 mode: CMCD_MODE_QUERY, /*overrides global mode. JSON not supported */
                                 interval: 10000,  /* time in ms between regular requests. Default 30s or 0 to omit */
                                 //enabledKeys: ['sta', 'sid', 'cid', 'sf', 'v', 'ltc', 'msd', ], /* Currently only supports: 'sta', 'ts', 'sid', 'cid', 'sf', 'v', 'lb', 'pr' */
-                                requestUrl: EVENT_MODE_URL, /* mandatory, URL to send report */
+                                requestUrl: CMCD_COLLECTOR_URL + '/cmcd/event-mode', /* mandatory, URL to send report */
                                 requestMethod: 'POST',  /* optional, get by default */
                                 // enabledKeys: ['br', 'd', 'ot', 'tb' , 'bl', 'dl', 'mtp', 'nor', 'nrr', 'su' , 'bs', 'rtp' , 'cid', 'pr', 'sf', 'sid', 'st', 'v', 'sta', 'ltc', 'msd', 'sta', 'e', 'int']
                             }
@@ -217,16 +217,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('useCollectorBtn').addEventListener('click', function() {
-            var collectorBaseURL = 'http://' + window.location.hostname+ ':3000'
-            RESPONSE_MODE_URL = collectorBaseURL + '/cmcd/response-mode';
-            EVENT_MODE_URL = collectorBaseURL + '/cmcd/event-mode'
+            CMCD_COLLECTOR_URL = 'http://' + window.location.hostname+ ':3000'
             init();
         });
             
         document.getElementById('useCollectorGcloudFunctionBtn').addEventListener('click', function() {
-            var collectorBaseURL = 'http://' + window.location.hostname+ ':3001'
-            RESPONSE_MODE_URL = collectorBaseURL + '/response';
-            EVENT_MODE_URL = collectorBaseURL + '/event'
+            CMCD_COLLECTOR_URL = 'http://' + window.location.hostname + ':3001'
             init();
         });
     });

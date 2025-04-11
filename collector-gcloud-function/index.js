@@ -50,15 +50,15 @@ const getCMCDMode = (req, res) => {
 
     console.log(`Received request for path: ${requestPath}`);
 
-    // Verify if the path starts with /response o /event
-    if (requestPath.startsWith('/response')) {
+    // Verify if the path starts with /cmcd/response-mode o /cmcd/event-mode
+    if (requestPath.startsWith('/cmcd/response-mode')) {
         cmcdMode = 'response';
-    } else if (requestPath.startsWith('/event')) {
+    } else if (requestPath.startsWith('/cmcd/event-mode')) {
         cmcdMode = 'event';
     } else {
-        // Return error if no /response or /event found
+        // Return error
         console.warn(`Unsupported path: ${requestPath}`);
-        return res.status(404).send('Not Found: Please use /response or /event path.');
+        return res.status(404).send('Not Found: Please use /cmcd/response-mode or /cmcd/event-mode path.');
     }
     return cmcdMode;
 }
