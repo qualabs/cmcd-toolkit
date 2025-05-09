@@ -15,8 +15,8 @@ services:
     secrets:
       - bigquery_secret_json
 
-  collector-gcloud-function:
-    build: ./collector-gcloud-function
+  gcloud-collector-function:
+    build: ./gcloud-collector-function
     ports:
       - "3001:8080" # Expose the collector service on port 3000
     environment:
@@ -29,15 +29,7 @@ services:
     build: ./player
     ports:
       - "8080:3000" # Map host port 8080 to container port 3000
-  prometheus:
-    image: prom/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus:/etc/prometheus
-      - prom_data:/prometheus
+  
   grafana:
     image: grafana/grafana
     ports:

@@ -6,9 +6,9 @@ services:
     volumes:
       - ./collector:/app # Collector code is in a 'collector' directory
 
-  collector-gcloud-function:
+  gcloud-collector-function:
     volumes:
-      - ./collector-gcloud-function:/app # Collector code is in a 'collector' directory
+      - ./gcloud-collector-function:/app # Collector code is in a 'collector' directory
 
   player:
     volumes:

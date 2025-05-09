@@ -1,5 +1,5 @@
 {
-    "name": "cmcd-collector-function",
+    "name": "gcloud-collector-function",
     "version": "1.0.0",
     "description": "CMCD Collector Cloud Function publishing to Pub/Sub",
     "main": "index.js",
