@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-echo "Starting Minikube..."
-minikube start --memory=4096 --cpus=2 --disk-size=20GB
+set -e
 
-echo "Configuring Docker to use Minikube's daemon..."
-eval $(minikube -p minikube docker-env)
+echo "Starting Docker Compose services in detached mode..."
+docker-compose up -d
 
-echo "Starting Tilt (this will deploy the apps and helm charts)..."
-cd ./tilt
-tilt up
+echo "Services started. Grafana should be available at http://localhost:8081"
+echo "Collector at http://localhost:3000"
+echo "InfluxDB at http://localhost:8086"

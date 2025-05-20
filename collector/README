@@ -1,5 +1,29 @@
 # CMCD Collector
 
+This service is responsible for collecting CMCD data. (Details about the specific CMCD collection mechanism - e.g., HTTP endpoint, log parsing - should be added here if not obvious from the code).
 
-## Develop
-copy `.env` to `.env.local` and confiure your credentials there
+Its logs are captured by Fluentd and sent to InfluxDB for analysis via Grafana.
+
+## Development
+
+For local development, you can use a `.env` file in this directory (`./collector`) to override or set environment variables used by the collector application. This can be useful for configuring credentials or behavior not directly managed in `docker-compose.yml`.
+
+Example:
+1.  Copy `.env` (if it exists as a template) or create a new `.env` file.
+    ```bash
+    cp .env.example .env # If you have an example file
+    ```
+2.  Add your environment-specific configurations to the `.env` file. These variables will be loaded by the collector application at startup if it's designed to do so (e.g., using a library like `dotenv`).
+
+The collector service in `docker-compose.yml` also defines some environment variables directly (e.g., for BigQuery). Variables in a local `.env` file might override these or supplement them, depending on the collector application's loading order.
+
+To apply code changes:
+1.  Modify the source code in the `./src` directory.
+2.  Rebuild the collector image:
+    ```bash
+    docker-compose build collector
+    ```
+3.  Restart the services:
+    ```bash
+    docker-compose up -d --no-deps collector
+    ```
