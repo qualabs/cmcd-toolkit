@@ -83,54 +83,100 @@ functions.http('cmcdProcessor', async (req, res) => {
     }
 
     // Get the mode
-    const cmcdMode = getCMCDMode(req, res)
+    const cmcdMode = getCMCDMode(req, res);
+    if (res.headersSent) return; // Stop processing if getCMCDMode sent a response
 
-    // TODO: Implement headers and JSON mode, only queryparams are allowed 
-    const rawData = req.query['CMCD'];
-    if (!rawData) {
-        console.warn('CMCD query parameter is missing. Only queryparams are supported');
-        return res.status(400).send('Bad Request: CMCD query parameter is missing. Only queryparams are supported');
-    }
+    const contentType = req.headers['content-type'];
 
     try {
-        // 1. Parse CMCD
-        const cmcd_keys = parseCMCDQueryToJson(rawData);
-
-        if (Object.keys(cmcd_keys).length === 0) {
-             console.warn('Parsed CMCD data is empty.');
-             // Decide si esto es un error o no. Podría ser un 204 igual.
-             return res.status(400).send('Bad Request: Parsed CMCD data is empty.');
-        }
-
-        // 2. Build the body object
-        const body = {};
-        body['request_user_agent'] = req.headers['user-agent'] || null;
-        body['request_origin'] = req.headers['origin'] || null;
-        // req.ip is managed by Functions Framework (may need  config of trust proxy in LB)
-        body['request_ip'] = req.ip || null;
-        body['request_datetime'] = new Date().toISOString();
-        body['cmcd_mode'] = cmcdMode;
-
-        Object.keys(cmcd_keys).forEach(key => {
-            body[`cmcd_key_${key}`] = cmcd_keys[key];
-            // Pasrse 'ts'
-            if (key === "ts" && typeof cmcd_keys[key] === 'number') {
-                try {
-                    body[`cmcd_key_ts_date`] = new Date(cmcd_keys[key]).toISOString();
-                } catch (dateError) {
-                     console.warn(`Could not convert cmcd_key_ts (${cmcd_keys[key]}) to Date: ${dateError.message}`);
-                }
+        if (contentType && contentType.startsWith('application/json')) {
+            // JSON Payload Handling
+            if (typeof req.body !== 'object' || req.body === null) {
+                console.warn('CMCD JSON payload is not an object or is null. Received:', typeof req.body);
+                return res.status(400).send('Bad Request: CMCD JSON payload must be a JSON object or array.');
             }
-        });
-        body['cmcd_data'] = rawData; // Save the original data
 
-        // 3. Prepare and send to  Pub/Sub
-        const messageBuffer = Buffer.from(JSON.stringify(body));
-        const messageId = await pubsub.topic(PUBSUB_TOPIC_NAME).publishMessage({ data: messageBuffer });
-        console.log(`Message ${messageId} published to ${PUBSUB_TOPIC_NAME}.`);
+            // Check for empty object or empty array
+            if ((Array.isArray(req.body) && req.body.length === 0) || Object.keys(req.body).length === 0) {
+                console.warn('CMCD JSON payload is an empty object or array.');
+                return res.status(400).send('Bad Request: CMCD JSON payload is an empty object or array.');
+            }
 
-        // 4. Enviar respuesta HTTP
-        res.status(204).send(); // 204 No Content es apropiado para colectores
+            const cmcdDataArray = Array.isArray(req.body) ? req.body : [req.body];
+
+            for (const cmcd_item of cmcdDataArray) {
+                if (Object.keys(cmcd_item).length === 0) {
+                    console.warn('Encountered an empty CMCD object in the JSON array.');
+                    // Potentially skip this item or return an error for the whole request
+                    // For now, we'll skip it and continue processing others.
+                    continue; 
+                }
+
+                const dataToPublish = {};
+                dataToPublish['request_user_agent'] = req.headers['user-agent'] || null;
+                dataToPublish['request_origin'] = req.headers['origin'] || null;
+                dataToPublish['request_ip'] = req.ip || null;
+                dataToPublish['request_datetime'] = new Date().toISOString();
+                dataToPublish['cmcd_mode'] = cmcdMode;
+
+                Object.keys(cmcd_item).forEach(key => {
+                    dataToPublish[`cmcd_key_${key}`] = cmcd_item[key];
+                    if (key === "ts" && typeof cmcd_item[key] === 'number') {
+                        try {
+                            dataToPublish[`cmcd_key_ts_date`] = new Date(cmcd_item[key]).toISOString();
+                        } catch (dateError) {
+                            console.warn(`Could not convert cmcd_key_ts (${cmcd_item[key]}) to Date: ${dateError.message}`);
+                        }
+                    }
+                });
+                dataToPublish['cmcd_data'] = JSON.stringify(cmcd_item);
+
+                const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
+                const messageId = await pubsub.topic(PUBSUB_TOPIC_NAME).publishMessage({ data: messageBuffer });
+                console.log(`Message ${messageId} (JSON item) published to ${PUBSUB_TOPIC_NAME}.`);
+            }
+            res.status(204).send();
+
+        } else {
+            // Query Parameter Handling (Existing Logic)
+            const rawData = req.query['CMCD'];
+            if (!rawData) {
+                console.warn('CMCD data not found in query parameters or JSON payload.');
+                return res.status(400).send('Bad Request: CMCD data not found in query parameters or JSON payload.');
+            }
+
+            const cmcd_keys = parseCMCDQueryToJson(rawData);
+
+            if (Object.keys(cmcd_keys).length === 0) {
+                console.warn('Parsed CMCD data from query is empty.');
+                return res.status(400).send('Bad Request: Parsed CMCD data from query is empty.');
+            }
+
+            const dataToPublish = {};
+            dataToPublish['request_user_agent'] = req.headers['user-agent'] || null;
+            dataToPublish['request_origin'] = req.headers['origin'] || null;
+            dataToPublish['request_ip'] = req.ip || null;
+            dataToPublish['request_datetime'] = new Date().toISOString();
+            dataToPublish['cmcd_mode'] = cmcdMode;
+
+            Object.keys(cmcd_keys).forEach(key => {
+                dataToPublish[`cmcd_key_${key}`] = cmcd_keys[key];
+                if (key === "ts" && typeof cmcd_keys[key] === 'number') {
+                    try {
+                        dataToPublish[`cmcd_key_ts_date`] = new Date(cmcd_keys[key]).toISOString();
+                    } catch (dateError) {
+                        console.warn(`Could not convert cmcd_key_ts (${cmcd_keys[key]}) to Date: ${dateError.message}`);
+                    }
+                }
+            });
+            dataToPublish['cmcd_data'] = rawData;
+
+            const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
+            const messageId = await pubsub.topic(PUBSUB_TOPIC_NAME).publishMessage({ data: messageBuffer });
+            console.log(`Message ${messageId} (query param) published to ${PUBSUB_TOPIC_NAME}.`);
+            
+            res.status(204).send();
+        }
 
     } catch (error) {
         console.error(`Error processing request or publishing to Pub/Sub: ${error.message}`, error);
