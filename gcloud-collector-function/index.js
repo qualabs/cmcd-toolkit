@@ -1,18 +1,22 @@
 import functions from '@google-cloud/functions-framework';
 import { PubSub } from '@google-cloud/pubsub';
 
+// --- Global Constants and Client Initialization ---
 const PUBSUB_TOPIC_NAME = process.env.PUBSUB_TOPIC_NAME || 'cmcd';
 
 if (!PUBSUB_TOPIC_NAME) {
     console.error('FATAL ERROR: PUBSUB_TOPIC_NAME environment variable not set.');
-    throw new Error('PUBSUB_TOPIC_NAME environment variable not set.');
+    throw new new Error('PUBSUB_TOPIC_NAME environment variable not set.');
 }
 
 const ALLOWED_ORIGINS = '*'; 
 const ALLOWED_METHODS = 'GET, POST, OPTIONS';
 const ALLOWED_HEADERS = '*'; 
 
+// Initialize PubSub client globally to reuse it across warm invocations
+// The PubSub client inherently handles batching.
 const pubsub = new PubSub();
+const pubsubTopic = pubsub.topic(PUBSUB_TOPIC_NAME); // Get topic reference once
 
 const parseCMCDQueryToJson = (input) => {
     if (!input) return {};
@@ -48,15 +52,11 @@ const getCMCDMode = (req, res) => {
     let cmcdMode;
     const requestPath = req.path;
 
-    console.log(`Received request for path: ${requestPath}`);
-
-    // Verify if the path starts with /cmcd/response-mode o /cmcd/event-mode
     if (requestPath.startsWith('/cmcd/response-mode')) {
         cmcdMode = 'response';
     } else if (requestPath.startsWith('/cmcd/event-mode')) {
         cmcdMode = 'event';
     } else {
-        // Return error
         console.warn(`Unsupported path: ${requestPath}`);
         return res.status(404).send('Not Found: Please use /cmcd/response-mode or /cmcd/event-mode path.');
     }
@@ -87,6 +87,8 @@ functions.http('cmcdProcessor', async (req, res) => {
     if (res.headersSent) return; // Stop processing if getCMCDMode sent a response
 
     const contentType = req.headers['content-type'];
+    const publishPromises = []; // Array to collect all Pub/Sub publish promises
+    let messagesProcessed = 0; // Counter for logging purposes
 
     try {
         if (contentType && contentType.startsWith('application/json')) {
@@ -132,11 +134,19 @@ functions.http('cmcdProcessor', async (req, res) => {
                 dataToPublish['cmcd_data'] = JSON.stringify(cmcd_item);
 
                 const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
-                const messageId = await pubsub.topic(PUBSUB_TOPIC_NAME).publishMessage({ data: messageBuffer });
-                console.log(`Message ${messageId} (JSON item) published to ${PUBSUB_TOPIC_NAME}.`);
+                
+                // Collect the promise in the array.
+                publishPromises.push(
+                    pubsubTopic.publishMessage({ data: messageBuffer })
+                        .catch(err => {
+                            // Log individual message publish errors without failing the whole batch
+                            console.error(`Failed to publish a message: ${err.message}. Data: ${JSON.stringify(dataToPublish)}`);
+                            return null; // Return null so Promise.allSettled can distinguish success/failure
+                        })
+                );
+                messagesProcessed++;
             }
-            res.status(204).send();
-
+            
         } else {
             // Query Parameter Handling (Existing Logic)
             const rawData = req.query['CMCD'];
@@ -172,14 +182,49 @@ functions.http('cmcdProcessor', async (req, res) => {
             dataToPublish['cmcd_data'] = rawData;
 
             const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
-            const messageId = await pubsub.topic(PUBSUB_TOPIC_NAME).publishMessage({ data: messageBuffer });
-            console.log(`Message ${messageId} (query param) published to ${PUBSUB_TOPIC_NAME}.`);
             
+            // Publish the message without await for query parameter too
+            publishPromises.push(
+                pubsubTopic.publishMessage({ data: messageBuffer })
+                    .catch(err => {
+                        console.error(`Failed to publish query param message: ${err.message}. Data: ${JSON.stringify(dataToPublish)}`);
+                        return null;
+                    })
+            );
+            messagesProcessed++;
+        }
+
+        // --- Critical Step: Wait for all publish operations to complete ---
+        // Use Promise.allSettled to ensure that even if some publishes fail,
+        // the function waits for all to attempt completion and logs the results.
+        const results = await Promise.allSettled(publishPromises);
+        
+        let successfulPublishes = 0;
+        let failedPublishes = 0;
+
+        results.forEach(result => {
+            if (result.status === 'fulfilled' && result.value !== null) { // result.value is null for caught errors
+                successfulPublishes++;
+            } else {
+                failedPublishes++;
+            }
+        });
+
+        console.log(`Summary: Attempted to publish ${messagesProcessed} messages. Successful: ${successfulPublishes}, Failed: ${failedPublishes}.`);
+
+        // If any message failed, you might want to return a 500, or a 200 with warnings.
+        // For data ingestion, 204 (No Content) is often appropriate if the request was syntactically correct.
+        // If all failed, or critical messages failed, a 500 might be better.
+        // For now, if at least one message was processed successfully, return 204.
+        if (successfulPublishes > 0) {
             res.status(204).send();
+        } else {
+            console.error('No messages were successfully published.');
+            res.status(500).send('Internal Server Error: No messages were published.');
         }
 
     } catch (error) {
-        console.error(`Error processing request or publishing to Pub/Sub: ${error.message}`, error);
+        console.error(`Unhandled error processing request: ${error.message}`, error);
         res.status(500).send('Internal Server Error');
     }
 });
