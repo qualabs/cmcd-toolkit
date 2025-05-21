@@ -12,42 +12,19 @@ services:
       - BIGQUERY_TABLE=cmcd_v2_data      
     secrets:
       - bigquery_secret_json
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: "localhost:24224" 
-        tag: "docker.collector.{{.Name}}" 
-    depends_on:
-      - fluentd
-  influxdb:
-    image: influxdb:2.7 
+  player:
+    build: ./player
     ports:
-      - "8086:8086"
-    volumes:
-      - influxdb_data:/var/lib/influxdb2
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=admin
-      - DOCKER_INFLUXDB_INIT_PASSWORD=password
-      - DOCKER_INFLUXDB_INIT_ORG=my-org
-      - DOCKER_INFLUXDB_INIT_BUCKET=my-bucket
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-admin-token
-    restart: unless-stopped
-  fluentd:
-    build: ./fluentd # Changed from image to build
+      - "8080:3000" # Map host port 8080 to container port 3000
+  prometheus:
+    image: prom/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
-      - "24224:24224" 
-      - "24224:24224/udp"
+      - 9090:9090
     volumes:
-      - ./fluentd:/fluentd/etc 
-      # - ./logs:/fluentd/log 
-    depends_on:
-      - influxdb
-    environment: # Add these environment variables
-      - FLUENT_INFLUXDB_TOKEN=my-super-secret-admin-token
-      - FLUENT_INFLUXDB_ORG=my-org
-      - FLUENT_INFLUXDB_BUCKET=my-bucket
-    restart: unless-stopped
+      - ./prometheus:/etc/prometheus
+      - prom_data:/prometheus
   grafana:
     image: grafana/grafana
     ports:
@@ -60,11 +37,9 @@ services:
       - bigquery_secret_pem
     volumes:
       - ./grafana:/etc/grafana/provisioning/datasources
-    depends_on:
-      - influxdb
 
 volumes:
-  influxdb_data: {}
+  prom_data:
 
 secrets:
   bigquery_secret_json:

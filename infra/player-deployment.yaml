@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: player
+  labels:
+    app: player
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: player
+  template:
+    metadata:
+      labels:
+        app: player
+    spec:
+      containers:
+      - name: player
+        image: player-image
+        env:
+        - name: DATA_SINK
+          value: "fluentd"
+        ports:
+        - containerPort: 3030

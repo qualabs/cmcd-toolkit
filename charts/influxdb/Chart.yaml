@@ -1,0 +1,5 @@
+apiVersion: v2
+name: influxdb
+description: A minimal InfluxDB chart for local development.
+version: 0.1.0
+appVersion: "1.8"
