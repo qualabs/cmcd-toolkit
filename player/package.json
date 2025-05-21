@@ -10,7 +10,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "serve --cors ."
+    "start": "serve --cors .",
+    "test": "echo 1"
   },
   "dependencies": {
     "cors": "^2.8.5",
