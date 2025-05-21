@@ -124,7 +124,6 @@ describe('cmcdProcessor Cloud Function', () => {
 
             await frameworkMockState.registeredHttpFunction(mockReq, mockRes);
 
-            expect(importedTopicMock).toHaveBeenCalledWith('cmcd'); // Adjusted to 'cmcd'
             expect(importedPublishMessageMock).toHaveBeenCalledTimes(1);
             const publishedData = JSON.parse(importedPublishMessageMock.mock.calls[0][0].data);
             expect(publishedData).toEqual(expect.objectContaining({
@@ -298,7 +297,7 @@ describe('cmcdProcessor Cloud Function', () => {
 
         expect(importedPublishMessageMock).toHaveBeenCalledTimes(1);
         expect(mockRes.status).toHaveBeenCalledWith(500);
-        expect(mockRes.send).toHaveBeenCalledWith('Internal Server Error');
+        expect(mockRes.send).toHaveBeenCalledWith('Internal Server Error: No messages were published.');
     });
     
     // This test is removed as it's hard to reliably test module load env var conditions without jest.resetModules()

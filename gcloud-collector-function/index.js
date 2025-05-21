@@ -216,7 +216,10 @@ functions.http('cmcdProcessor', async (req, res) => {
         // For data ingestion, 204 (No Content) is often appropriate if the request was syntactically correct.
         // If all failed, or critical messages failed, a 500 might be better.
         // For now, if at least one message was processed successfully, return 204.
-        if (successfulPublishes > 0) {
+
+        if (messagesProcessed == 0){
+            res.status(204).send();
+        } else if (successfulPublishes > 0) {
             res.status(204).send();
         } else {
             console.error('No messages were successfully published.');
