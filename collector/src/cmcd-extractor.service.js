@@ -1,6 +1,8 @@
 import parseCMCDQueryToJson from './parseCMCDQueryToJson.js';
 import saveBigQuery from './bigquery.js';
 import savePubSub from './pubsub.js';
+import saveFluentd from './fluentd.js';
+
 
 export const cmcdExtractorService = async ({req, cmcdMode}) => {
     const contentType = req.headers['content-type'];
@@ -51,6 +53,7 @@ export const cmcdExtractorService = async ({req, cmcdMode}) => {
 const saveData = async (body) => {
     // TODO: Save data
     console.log (body);
+    saveFluentd(body);
     saveBigQuery(body);
     savePubSub(body);
 }

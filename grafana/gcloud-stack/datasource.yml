@@ -11,9 +11,3 @@ datasources:
     defaultProject: cmcdv2-bigquery # Use your project ID
     tokenUri: https://oauth2.googleapis.com/token
     privateKeyPath: '/run/secrets/bigquery_secret_pem'
-- name: InfluxDB
-  type: influxdb
-  access: proxy
-  url: http://influxdb:8086
-  database: analytics
-  isDefault: true
