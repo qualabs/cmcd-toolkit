@@ -24,12 +24,52 @@ services:
       - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
     secrets:
       - bigquery_secret_json
-      
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: 172.19.0.5:24224
+        tag: "docker.collector"
+    depends_on:
+      - fluentd
+
   player:
     build: ./player
     ports:
       - "8080:3000" # Map host port 8080 to container port 3000
-  
+
+  influxdb:
+    image: influxdb:1.8
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=analytics
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin_password
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
+  fluentd:
+    platform: linux/arm64
+    build: ./fluentd
+    restart: unless-stopped
+    volumes:
+      - ./fluentd:/fluentd/etc
+      - fluentd_buffer:/fluentd/log/buffer # Persistent buffer volume
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    environment:
+      # These are used by fluent.conf for InfluxDB connection
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_DB=analytics
+      - INFLUXDB_USER=admin
+      - INFLUXDB_PASSWORD=admin_password
+      - INFLUXDB_MEASUREMENT=cmcd_metrics
+    depends_on:
+      - influxdb # Fluentd needs InfluxDB to be running
+
   grafana:
     image: grafana/grafana
     ports:
@@ -44,7 +84,8 @@ services:
       - ./grafana:/etc/grafana/provisioning/datasources
 
 volumes:
-  prom_data:
+  influxdb_data:
+  fluentd_buffer:
 
 secrets:
   bigquery_secret_json:
