@@ -2,19 +2,14 @@ version: "3.8"
 
 services:
   collector:
-    build: ./collector
     command: npm run dev
-    ports:
-      - "3000:3000" # Expose the collector service on port 3000
     volumes:
       - ./collector:/app # Collector code is in a 'collector' directory
 
+  gcloud-collector-function:
+    volumes:
+      - ./gcloud-collector-function:/app # Collector code is in a 'collector' directory
 
   player:
-    build: ./player
-    ports:
-      - "8080:3000" # Map host port 8080 to container port 3000
     volumes:
       - ./player:/app # Static files are in 'player'
-
-

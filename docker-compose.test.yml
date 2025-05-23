@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  collector:
+    build: ./collector
+    command: npm run test
+    volumes:
+    - ./collector:/app # Collector code is in a 'collector' directory
+
+  gcloud-collector-function:
+    build: ./gcloud-collector-function
+    command: npm run test
+    volumes:
+      - ./gcloud-collector-function:/app # Collector code is in a 'collector' directory

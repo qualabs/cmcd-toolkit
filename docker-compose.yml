@@ -6,25 +6,30 @@ services:
     ports:
       - "3000:3000" # Expose the collector service on port 3000
     environment:
-      - BIGQUERY_ENABLED=true
+      - BIGQUERY_ENABLED=false
       - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
       - BIGQUERY_DATASET=cmcd
-      - BIGQUERY_TABLE=cmcd_v2_data      
+      - BIGQUERY_TABLE=cmcd     
+      - PUBSUB_ENABLED=true
+      - PUBSUB_TOPIC_NAME=cmcd
     secrets:
       - bigquery_secret_json
+
+  gcloud-collector-function:
+    build: ./gcloud-collector-function
+    ports:
+      - "3001:8080" # Expose the collector service on port 3000
+    environment:
+      - PUBSUB_TOPIC_NAME=cmcd
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
+    secrets:
+      - bigquery_secret_json
+      
   player:
     build: ./player
     ports:
       - "8080:3000" # Map host port 8080 to container port 3000
-  prometheus:
-    image: prom/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    ports:
-      - 9090:9090
-    volumes:
-      - ./prometheus:/etc/prometheus
-      - prom_data:/prometheus
+  
   grafana:
     image: grafana/grafana
     ports:
