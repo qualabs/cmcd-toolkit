@@ -2,7 +2,6 @@ import parseCMCDQueryToJson from './parseCMCDQueryToJson.js';
 import saveBigQuery from './bigquery.js';
 import savePubSub from './pubsub.js';
 import saveFluentd from './fluentd.js';
-import { request } from 'http';
 
 
 export const cmcdExtractorService = async ({req, cmcdMode}) => {
