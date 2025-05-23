@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CMCD v2 Reporting MVP</title>
+
+    <script src="./lib/dash.all.min.js"></script>
+
+    <!-- Bootstrap core CSS -->
+    <link href="./lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <link href="./lib/main.css" rel="stylesheet">
+
+    <style>
+        video {
+            width: 100%;
+        }
+
+        #trace {
+            height: 500px;
+            margin-top: 20px;
+            font-size: 10px;
+        }
+    </style>
+
+    <script class="code">
+        /* Settings for collector urls */
+        var CMCD_COLLECTOR_URL = 'http://' + window.location.hostname + ':3000';
+        
+        var collectorUrl = getQueryParam('collector');
+        if (collectorUrl) {
+            CMCD_COLLECTOR_URL = collectorUrl;
+        }
+        console.log('CMCD_COLLECTOR_URL: ' + CMCD_COLLECTOR_URL);
+
+        /* Possible modes of attach cmcd data */
+        var CMCD_MODE_QUERY = 'query'; /* as query parameters */
+        var CMCD_MODE_HEADER = 'header'; /* as HTTP headers */
+
+        var player;
+
+        function getQueryParam(param) {
+            var urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        function obtenerUltimos10Caracteres(str) {
+            // Comprobar si la longitud del string es menor que 10
+            if (str.length <= 20) {
+                return str; // Retornar la cadena completa si es más corta que 10 caracteres
+            }
+            return str.slice(-20); // Devolver los últimos 10 caracteres
+        }
+        
+        function init(){
+            var video = document.querySelector('video');
+            player = dashjs.MediaPlayer().create();
+            player.initialize();
+            player.attachView(video);
+
+            player.on(dashjs.MetricsReporting.events.CMCD_DATA_GENERATED, handleCmcdDataGeneratedEvent);
+        }
+
+        function play(url) {
+            player.updateSettings({
+                streaming: {
+                cmcd: {
+                    version: 2,
+                    enabled: true, /* enable reporting of cmcd parameters */
+                    cid: obtenerUltimos10Caracteres(url), /* content id send with each request */
+                    mode: CMCD_MODE_QUERY,
+                    targets: [
+                        {
+                            cmcdMode: 'response',
+                            enabled: true,                       
+                            url: CMCD_COLLECTOR_URL + '/cmcd/response-mode',
+                            mode: CMCD_MODE_QUERY,
+                        },
+                        {
+                            enabled: true,
+                            cmcdMode: 'event',
+                            url: CMCD_COLLECTOR_URL + '/cmcd/event-mode',
+                            timeInterval: 10,                      
+                            mode: CMCD_MODE_QUERY,
+                        },
+                    ]
+                }}
+            })
+            player.setAutoPlay(true);
+            player.attachSource(url);
+        }
+
+        function handleCmcdDataGeneratedEvent(event) {
+            console.log(
+                'requestType: ' + event.requestType, 
+                ' | target: ' + event.url.split('/').pop(),
+                event.cmcdData
+            );
+        }
+    </script>
+</head>
+<body>
+
+<main>
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <img class=""
+                 src="./lib/img/dashjs-logo.png"
+                 width="200">
+        </header>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="h-100 p-5 bg-light border rounded-3">
+                    <h3>CMCD v2</h3>
+                    <p>This sample sends CMCD v2 data using Request, Response and Event mode.</p>
+                    <p><i>Note: Open the browser console to see the CMCD v2 logs</i></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row margin-top-row">
+            <div class="input-group">
+                <button id="load-button" type="button" class="btn btn-primary" aria-haspopup="true" aria-expanded="false">Load</button>
+                <select id="url-select" class="dropdown-toggle">
+                    <option value="custom">Custom</option>
+                    <option 
+                        value="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd">
+                        VOD BBB</option>
+                    <option
+                        value="https://livesim.dashif.org/livesim2/WAVE/vectors/cfhd_sets/12.5_25_50/t1/2022-10-17/stream.mpd">
+                        Live</option>
+                    <option value="https://cmafref.akamaized.net/cmaf/live-ull/2006350/akambr/out.mpd">Low latency Live</option>
+                </select>
+                <input id="custom-url" type="text" class="form-control" placeholder="Paste your own DASH manifest URL here" style="margin-left: 8px;">
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-md-12">
+                <video controls="true"></video>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="code-output"></div>
+            </div>
+        </div>
+    </div>
+</main>
+
+
+<script>
+    init();
+    const loadButton = document.getElementById('load-button');
+    const urlSelect = document.getElementById('url-select');
+    const customUrl = document.getElementById('custom-url');
+
+
+    urlSelect.addEventListener('change', () => {
+        if(urlSelect.value === 'custom') {
+            customUrl.disabled = false;
+            customUrl.value = '';
+        } else {
+            customUrl.value = urlSelect.value;
+            customUrl.disabled = true;
+        }
+    });
+
+    loadButton.addEventListener('click', () => {
+        const enteredUrl = customUrl.value.trim();
+        const selectedUrl = urlSelect.value;
+        var url = enteredUrl !== '' ? enteredUrl : selectedUrl;
+        play(url)
+    });
+
+    /* Settings for autoplay play */
+    var urlQueryParam = getQueryParam('url');
+    if (urlQueryParam) {
+        customUrl.value = urlQueryParam;
+    }
+    var autoplay = getQueryParam('autoplay');
+    if (autoplay) {
+        loadButton.click();
+    }
+
+</script>
+<script src="../highlighter.js"></script>
+</body>
+</html>
