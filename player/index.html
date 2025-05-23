@@ -89,54 +89,14 @@
         }
 
         function handleCmcdDataGeneratedEvent(event) {
-            log('type: ' + event.mediaType);
-            log('file: ' + event.url.split('/').pop())
-            var mode = player.getSettings().streaming.cmcd.mode;
-            // TODO: need to improve for JSON support with batched data
-            const cmcdVersion = player.getSettings().streaming.cmcd.version;
-            var data = mode === CMCD_MODE_HEADER ? getKeysForHeaderMode(event) : getKeysForQueryMode(event);
-            var keys = Object.keys(data);
+            log('requestType: ' + event.requestType);
+            log('target: ' + event.url.split('/').pop())
+            var keys = Object.keys(event.cmcdData);
             keys = keys.sort();
             for (var key of keys) {
                 log(key.padEnd(4) + ': ' + event.cmcdData[key]);
             }
             log('');
-        }
-
-        function getKeysForQueryMode(event) {
-            var cmcdData = {};
-            var cmcdString = event.cmcdString;
-
-            extractKeyValuePairs(cmcdString, cmcdData);
-
-            return cmcdData;
-        }
-
-        function getKeysForHeaderMode(event) {
-            var cmcdData = {};
-            var keys = Object.keys(event.headers);
-
-            for (var key of keys) {
-                extractKeyValuePairs(event.headers[key], cmcdData)
-            }
-            
-            return cmcdData
-        }
-
-        function extractKeyValuePairs(cmcdString, cmcdData) {
-            if (cmcdString === '') {
-                return;
-            }
-            var keyValuePairs = cmcdString.split(',');
-
-            keyValuePairs.forEach(function (keyValuePair) {
-                var data = keyValuePair.split('=');
-                var key = data[0];
-                var value = data[1];
-
-                cmcdData[key] = value;
-            })
-
         }
 
         function log(msg) {
