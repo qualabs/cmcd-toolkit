@@ -92,14 +92,9 @@
             log('type: ' + event.mediaType);
             log('file: ' + event.url.split('/').pop())
             var mode = player.getSettings().streaming.cmcd.mode;
+            // TODO: need to improve for JSON support with batched data
             const cmcdVersion = player.getSettings().streaming.cmcd.version;
-            var data = {};
-            if (cmcdVersion === 1) {
-                data = mode === CMCD_MODE_HEADER ? getKeysForHeaderMode(event) : getKeysForQueryMode(event);
-            } else if (cmcdVersion === 2){
-                /* Currently, headers are always generated in cmcd version 2 */
-                data = getKeysForHeaderMode(event);
-            }
+            var data = mode === CMCD_MODE_HEADER ? getKeysForHeaderMode(event) : getKeysForQueryMode(event);
             var keys = Object.keys(data);
             keys = keys.sort();
             for (var key of keys) {
