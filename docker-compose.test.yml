@@ -12,3 +12,8 @@ services:
     command: npm run test
     volumes:
       - ./gcloud-collector-function:/app # Collector code is in a 'collector' directory
+
+  player:
+    build: ./player
+    ports:
+      - "8080:3000" # Map host port 8080 to container port 3000

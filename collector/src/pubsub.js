@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { PubSub } from '@google-cloud/pubsub';
 import {PUBSUB_ENABLED, PUBSUB_TOPIC_NAME } from './utils/config.js';
 

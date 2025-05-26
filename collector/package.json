@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@fluent-org/logger": "^1.0.10",
     "@google-cloud/bigquery": "^7.9.3",
     "@google-cloud/pubsub": "^4.11.0",
     "cors": "^2.8.5",
