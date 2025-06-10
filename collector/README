@@ -1,5 +1,0 @@
-# CMCD Collector
-
-
-## Develop
-copy `.env` to `.env.local` and confiure your credentials there

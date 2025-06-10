@@ -4,18 +4,51 @@ services:
   collector:
     build: ./collector
     ports:
-      - "3000:3000" # Expose the collector service on port 3000
+      - "3000:3000"
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/bigquery_secret_json
-      - PUBSUB_ENABLED=true
-      - PUBSUB_TOPIC_NAME=cmcd
-    secrets:
-      - bigquery_secret_json
+      - LOCAL_ENABLED=true
+      - LOCAL_FLUENTD_HOST=fluentd
+      - LOCAL_FLUENTD_PORT=24224
+      - LOCAL_FLUENTD_TAG=node.collector
+    depends_on:
+      - fluentd
 
   player:
     build: ./player
     ports:
-      - "8080:3000" # Map host port 8080 to container port 3000
+      - "8080:3000"
+
+  influxdb:
+    image: influxdb:1.8
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=analytics
+      - INFLUXDB_ADMIN_USER=admin
+      - INFLUXDB_ADMIN_PASSWORD=admin_password
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+
+  fluentd:
+    platform: linux/arm64
+    build: ./fluentd
+    restart: unless-stopped
+    volumes:
+      - ./fluentd:/fluentd/etc
+      - fluentd_buffer:/fluentd/log/buffer
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    environment:
+      - INFLUXDB_HOST=influxdb
+      - INFLUXDB_PORT=8086
+      - INFLUXDB_DB=analytics
+      - INFLUXDB_USER=admin
+      - INFLUXDB_PASSWORD=admin_password
+      - INFLUXDB_MEASUREMENT=cmcd_metrics
+    depends_on:
+      - influxdb
 
   grafana:
     image: grafana/grafana
@@ -24,14 +57,10 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=grafana
-      - GF_INSTALL_PLUGINS=grafana-bigquery-datasource
-    secrets:
-      - bigquery_secret_pem
     volumes:
-      - ./grafana/gcloud-stack:/etc/grafana/provisioning/datasources
+      - ./grafana/local-stack:/etc/grafana/provisioning/datasources
+      - ./grafana/local-stack/dashboards:/etc/grafana/provisioning/dashboards
 
-secrets:
-  bigquery_secret_json:
-    file: ./secrets/bigquery_secret.json
-  bigquery_secret_pem:
-    file: ./secrets/bigquery_secret.pem
+volumes:
+  influxdb_data:
+  fluentd_buffer:
