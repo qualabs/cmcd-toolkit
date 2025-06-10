@@ -8,12 +8,12 @@ This repository provides tools to collect and analize CMCD v2 locally and in dif
 
 The project is organized into the following modules:
 
-*   **collector**: Responsible for receiving, processing, and forwording CMCD data to a DB or storage instance. It can be configured to work with different backends like Fluentd or Google PubSub
-*   **fluentd**: A data collector for unified logging. It's primarily used in the local setup to forward CMCD data from the `collector` to an InfluxDB instance for quick visualization with Grafana. It can be configured to output to other destinations like BigQuery or apply filters and data enrichment (like adding geoip data based on the user IP address)
-*   **gcloud-big-table**: Contains the schema definition (`bigquery-cmcdv2-schema.json`) for storing CMCD data in **Google BigQuery** within the Google Cloud flavor.
-*   **gcloud-collector-function**: A Google Cloud Function implementation of the CMCD collector. This is an alternative to the Docker-based collector for serverless deployments on Google Cloud.
-*   **grafana**: Contains Grafana configurations for visualizing CMCD data. It includes dashboards for both local and Google Cloud setups.
-*   **player**: A web-based video player based in dash.js used for testing and demonstrating CMCD data collection. It can be configured to send CMCD data to the collector.
+*   [**collector**](collector/README.md): Responsible for receiving, processing, and forwording CMCD data to a DB or storage instance. It can be configured to work with different backends like Fluentd or Google PubSub
+*   [**fluentd**](fluentd/README.md): A data collector for unified logging. It's primarily used in the local setup to forward CMCD data from the `collector` to an InfluxDB instance for quick visualization with Grafana. It can be configured to output to other destinations like BigQuery or apply filters and data enrichment (like adding geoip data based on the user IP address)
+*   [**gcloud-big-table**](gcloud-big-table/README.md): Contains the schema definition (`bigquery-cmcdv2-schema.json`) for storing CMCD data in **Google BigQuery** within the Google Cloud flavor.
+*   [**gcloud-collector-function**](gcloud-collector-function/README.md): A Google Cloud Function implementation of the CMCD collector. This is an alternative to the Docker-based collector for serverless deployments on Google Cloud.
+*   [**grafana**](grafana/README.md): Contains Grafana configurations for visualizing CMCD data. It includes dashboards for both local and Google Cloud setups.
+*   [**player**](player/README.md): A web-based video player based in dash.js used for testing and demonstrating CMCD data collection. It can be configured to send CMCD data to the collector.
 
 
 ## How to run localy
