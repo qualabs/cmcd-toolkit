@@ -59,6 +59,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=grafana
     volumes:
       - ./grafana/local-stack:/etc/grafana/provisioning/datasources
+      - ./grafana/local-stack/dashboards:/etc/grafana/provisioning/dashboards
 
 volumes:
   influxdb_data:
