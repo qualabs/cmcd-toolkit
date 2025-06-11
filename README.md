@@ -27,7 +27,7 @@ How to run:
 2. Player will be available at: [http://localhost:8080](http://localhost:8080), 
 3. Press the "Collector" button to start sending CMCD v2 data to the local collector.
 4. Play any DASH content in the player.
-5. Login to grafana at [http://localhost:8080](http://localhost:8080)
+5. Login to grafana at [http://localhost:8081](http://localhost:8081)
    * User: `admin`
    * Password: `grafana`
 6. Open a grafana dashboard to start analyzing the CMCD data from the player.
