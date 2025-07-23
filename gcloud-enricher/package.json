@@ -1,0 +1,18 @@
+{
+  "name": "enricher",
+  "version": "1.0.0",
+  "description": "CMCD Geo-enrichment Microservice",
+  "license": "MIT",
+  "author": "",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.0.0",
+    "@google-cloud/pubsub": "^4.11.0",
+    "@google-cloud/storage": "^7.11.0",
+    "maxmind": "^4.3.18"
+  }
+}
