@@ -12,8 +12,6 @@ const FILTER_DATA = process.env.FILTER_DATA; // Optional, can be empty if not us
 
 const pubsub = new PubSub();
 const storage = new Storage();
-const geolite2CityPath = path.join('/tmp', GEOLITE2_CITY_FILE);
-const geolite2AsnPath = path.join('/tmp', GEOLITE2_ASN_FILE);
 
 let geolite2city;
 let geolite2asn;
@@ -28,6 +26,7 @@ async function downloadAndLoadGeoIpDatabase() {
     if (GEOLITE2_CITY_FILE){
         try {
             console.log(`Downloading GeoLite2-City database from gs://${BUCKET_NAME}/${GEOLITE2_CITY_FILE}...`);
+            const geolite2CityPath = path.join('/tmp', GEOLITE2_CITY_FILE);
             await storage.bucket(BUCKET_NAME).file(GEOLITE2_CITY_FILE).download({ destination: geolite2CityPath });
             console.log('GeoLite2-City database downloaded successfully.');
             geolite2city = await maxmind.open(geolite2CityPath);
@@ -42,6 +41,7 @@ async function downloadAndLoadGeoIpDatabase() {
     if (GEOLITE2_ASN_FILE) {
         try{
             console.log(`Downloading GeoLite2-ASN database from gs://${BUCKET_NAME}/${GEOLITE2_ASN_FILE}...`);
+            const geolite2AsnPath = path.join('/tmp', GEOLITE2_ASN_FILE);
             await storage.bucket(BUCKET_NAME).file(GEOLITE2_ASN_FILE).download({ destination: geolite2AsnPath });
             console.log('GeoLite2-ASN database downloaded successfully.');
             geolite2asn = await maxmind.open(geolite2AsnPath);
@@ -57,7 +57,7 @@ async function downloadAndLoadGeoIpDatabase() {
 function getInitializationPromise() {
     // At startup, download the db only once.
     if (!initializationPromise) {
-        console.log('GeoIP database not initialized. Starting download.');
+        console.log('GeoIP databases not initialized. Starting download.');
         initializationPromise = downloadAndLoadGeoIpDatabase();
     }
     return initializationPromise;
