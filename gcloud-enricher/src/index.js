@@ -4,11 +4,11 @@ import { Storage } from '@google-cloud/storage';
 import maxmind from 'maxmind';
 import path from 'path';
 
-const PUBSUB_OUTPUT_TOPIC_NAME = process.env.PUBSUB_OUTPUT_TOPIC_NAME;
-const BUCKET_NAME = process.env.BUCKET_NAME;
-const GEOLITE2_CITY_FILE = process.env.GEOLITE2_CITY_FILE;
-const GEOLITE2_ASN_FILE = process.env.GEOLITE2_ASN_FILE;
-
+const PUBSUB_OUTPUT_TOPIC_NAME = process.env.PUBSUB_OUTPUT_TOPIC_NAME; //Required. Name of the Pub/Sub topic to publish enriched messages
+const BUCKET_NAME = process.env.BUCKET_NAME; // Optional, can be empty if not used. Name of the bucket where the GeoLite2 databases are stored
+const GEOLITE2_CITY_FILE = process.env.GEOLITE2_CITY_FILE; // Optional, can be empty if not used. Name of the GeoLite2 City database file in the bucket
+const GEOLITE2_ASN_FILE = process.env.GEOLITE2_ASN_FILE; // Optional, can be empty if not used. Name of the GeoLite2 ASN database file in the bucket
+const FILTER_DATA = process.env.FILTER_DATA; // Optional, can be empty if not used. Coma separated list of fields to remmove before publishing
 
 const pubsub = new PubSub();
 const storage = new Storage();
@@ -20,6 +20,11 @@ let geolite2asn;
 let initializationPromise = null;
 
 async function downloadAndLoadGeoIpDatabase() {
+    if (!BUCKET_NAME) {
+        console.log(`No bucket name provided.`);
+        return
+    }
+
     if (GEOLITE2_CITY_FILE){
         try {
             console.log(`Downloading GeoLite2-City database from gs://${BUCKET_NAME}/${GEOLITE2_CITY_FILE}...`);
@@ -98,6 +103,16 @@ functions.cloudEvent('enrichCmcd', async (cloudEvent) => {
         } else {
             console.warn(`IP address ${data.request_ip} not found in GeoLite2-ASN database.`);
         }
+    }
+
+    if (FILTER_DATA) {
+        // Remove fields specified in FILTER_DATA
+        const fieldsToRemove = FILTER_DATA.split(',').map(field => field.trim());
+        fieldsToRemove.forEach(field => {
+            if (data.hasOwnProperty(field)) {
+                delete data[field];
+            }
+        });    
     }
 
     try {
