@@ -13,6 +13,7 @@
     "@google-cloud/functions-framework": "^3.0.0",
     "@google-cloud/pubsub": "^4.11.0",
     "@google-cloud/storage": "^7.11.0",
-    "maxmind": "^4.3.18"
+    "maxmind": "^4.3.18",
+    "ua-parser-js": "^2.0.4"
   }
 }
