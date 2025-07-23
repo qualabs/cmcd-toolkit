@@ -1,42 +1,70 @@
+import functions from '@google-cloud/functions-framework';
 import { PubSub } from '@google-cloud/pubsub';
 import { Storage } from '@google-cloud/storage';
 import maxmind from 'maxmind';
-import { config } from 'dotenv';
 import path from 'path';
-import fs from 'fs';
-import functions from '@google-cloud/functions-framework';
-
-config();
-config({ path: `.env.local`, override: true });
 
 const PUBSUB_OUTPUT_TOPIC_NAME = process.env.PUBSUB_OUTPUT_TOPIC_NAME;
 const BUCKET_NAME = process.env.BUCKET_NAME;
-const BUCKET_DB_FILE = process.env.BUCKET_DB_FILE;
+const GEOLITE2_CITY_FILE = process.env.GEOLITE2_CITY_FILE;
+const GEOLITE2_ASN_FILE = process.env.GEOLITE2_ASN_FILE;
+
 
 const pubsub = new PubSub();
 const storage = new Storage();
-const geoIpDbPath = path.join('/tmp', BUCKET_DB_FILE);
+const geolite2CityPath = path.join('/tmp', GEOLITE2_CITY_FILE);
+const geolite2AsnPath = path.join('/tmp', GEOLITE2_ASN_FILE);
 
-let reader;
+let geolite2city;
+let geolite2asn;
+let initializationPromise = null;
 
-async function downloadGeoIpDatabase() {
-    if (reader) {
-        return;
+async function downloadAndLoadGeoIpDatabase() {
+    if (GEOLITE2_CITY_FILE){
+        try {
+            console.log(`Downloading GeoLite2-City database from gs://${BUCKET_NAME}/${GEOLITE2_CITY_FILE}...`);
+            await storage.bucket(BUCKET_NAME).file(GEOLITE2_CITY_FILE).download({ destination: geolite2CityPath });
+            console.log('GeoLite2-City database downloaded successfully.');
+            geolite2city = await maxmind.open(geolite2CityPath);
+            console.log('GeoLite2-City database loaded successfully.');
+        } catch (error) {
+            console.error('Failed to download or load GeoLite2-City database:', error);
+            initializationPromise = null;
+            throw error;
+        }
     }
-    try {
-        console.log(`Downloading GeoIP database from gs://${BUCKET_NAME}/${BUCKET_DB_FILE}...`);
-        await storage.bucket(BUCKET_NAME).file(BUCKET_DB_FILE).download({ destination: geoIpDbPath });
-        console.log('GeoIP database downloaded successfully.');
-        reader = await maxmind.open(geoIpDbPath);
-        console.log('GeoIP database loaded successfully.');
-    } catch (error) {
-        console.error('Failed to download or load GeoIP database:', error);
-        throw error;
+
+    if (GEOLITE2_ASN_FILE) {
+        try{
+            console.log(`Downloading GeoLite2-ASN database from gs://${BUCKET_NAME}/${GEOLITE2_ASN_FILE}...`);
+            await storage.bucket(BUCKET_NAME).file(GEOLITE2_ASN_FILE).download({ destination: geolite2AsnPath });
+            console.log('GeoLite2-ASN database downloaded successfully.');
+            geolite2asn = await maxmind.open(geolite2AsnPath);
+            console.log('GeoLite2-ASN database loaded successfully.');
+        } catch (error) {
+            console.error('Failed to download or load GeoLite2-ASN database:', error);
+            initializationPromise = null;
+            throw error;
+        }
     }
 }
 
+function getInitializationPromise() {
+    // At startup, download the db only once.
+    if (!initializationPromise) {
+        console.log('GeoIP database not initialized. Starting download.');
+        initializationPromise = downloadAndLoadGeoIpDatabase();
+    }
+    return initializationPromise;
+}
+
 functions.cloudEvent('enrichCmcd', async (cloudEvent) => {
-    await downloadGeoIpDatabase();
+    try {
+        await getInitializationPromise();
+    } catch (error) {
+        console.error('GeoIP database initialization failed. Aborting function execution.');
+        throw error;
+    }
 
     const payload = Buffer.from(cloudEvent.data.message.data, 'base64').toString('utf-8');
 
@@ -48,29 +76,33 @@ functions.cloudEvent('enrichCmcd', async (cloudEvent) => {
         return; // Acknowledge to prevent retries
     }
 
-    const ip = data.request_ip;
-    if (!ip) {
-        console.warn('No request_ip found in the message.');
-    } else {
-        const geoData = reader.get(ip);
-        if (geoData) {
-            data.request_country_code = geoData.country?.iso_code;
-            data.request_country_name = geoData.country?.names?.en;
-            data.request_city_name = geoData.city?.names?.en;
-            data.request_postal_code = geoData.postal?.code;
-            data.request_latitude = geoData.location?.latitude;
-            data.request_longitude = geoData.location?.longitude;
-            data.request_asn_number = geoData.autonomous_system_number;
-            data.request_asn_organization = geoData.autonomous_system_organization;
+    if (geolite2city) {
+        const geoCityData = geolite2city.get(data.request_ip);
+        if (geoCityData) {
+            data.request_country_code = geoCityData.country?.iso_code;
+            data.request_country_name = geoCityData.country?.names?.en;
+            data.request_city_name = geoCityData.city?.names?.en;
+            data.request_postal_code = geoCityData.postal?.code;
+            data.request_latitude = geoCityData.location?.latitude;
+            data.request_longitude = geoCityData.location?.longitude;
         } else {
-            console.warn(`IP address ${ip} not found in GeoIP database.`);
+            console.warn(`IP address ${data.request_ip} not found in GeoLite2-City database.`);
+        }
+    }
+
+    if (geolite2asn) {
+        const geoAsnData = geolite2asn.get(data.request_ip);
+        if (geoAsnData) {
+            data.request_asn_number = geoAsnData.autonomous_system_number;
+            data.request_asn_organization = geoAsnData.autonomous_system_organization;
+        } else {
+            console.warn(`IP address ${data.request_ip} not found in GeoLite2-ASN database.`);
         }
     }
 
     try {
         const messageBuffer = Buffer.from(JSON.stringify(data));
         await pubsub.topic(PUBSUB_OUTPUT_TOPIC_NAME).publishMessage({ data: messageBuffer });
-        console.log('Enriched message published successfully.');
     } catch (error) {
         console.error('Failed to publish enriched message:', error);
         // Let the function fail to trigger a retry
