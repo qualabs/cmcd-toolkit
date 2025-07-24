@@ -9,7 +9,7 @@
     { "name": "request_postal_code", "type": "STRING", "mode": "NULLABLE", "description": "Postal code derived from the client IP."},
     { "name": "request_latitude", "type": "FLOAT", "mode": "NULLABLE", "description": "Latitude derived from the client IP."},
     { "name": "request_longitude", "type": "FLOAT", "mode": "NULLABLE", "description": "Longitude derived from the client IP."},
-    { "name": "request_asn_number", "type": "STRING", "mode": "NULLABLE", "description": "Autonomous System Number (ASN) derived from the client IP."},
+    { "name": "request_asn_number", "type": "INTEGER", "mode": "NULLABLE", "description": "Autonomous System Number (ASN) derived from the client IP."},
     { "name": "request_asn_organization", "type": "STRING", "mode": "NULLABLE", "description": "Autonomous System Organization (ASO) derived from the client IP."},
     { "name": "request_browser_name", "type": "STRING", "mode": "NULLABLE", "description": "Browser name derived from the user agent" },
     { "name": "request_browser_version", "type": "STRING", "mode": "NULLABLE", "description": "Browser version derived from the user agent" },
