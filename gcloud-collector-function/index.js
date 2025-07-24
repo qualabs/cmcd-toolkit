@@ -130,6 +130,14 @@ functions.http('cmcdProcessor', async (req, res) => {
                             console.warn(`Could not convert cmcd_key_ts (${cmcd_item[key]}) to Date: ${dateError.message}`);
                         }
                     }
+                    if (key === "url") {
+                        try {
+                            const url = new URL(cmcd_item[key]);
+                            dataToPublish['cmcd_key_url_domain'] = url.hostname;
+                        } catch (urlError) {
+                            console.warn(`Could not parse URL for cmcd_key_url: ${cmcd_item[key]}`);
+                        }
+                    }
                 });
                 dataToPublish['cmcd_data'] = JSON.stringify(cmcd_item);
 
@@ -176,6 +184,15 @@ functions.http('cmcdProcessor', async (req, res) => {
                         dataToPublish[`cmcd_key_ts_date`] = new Date(cmcd_keys[key]).toISOString();
                     } catch (dateError) {
                         console.warn(`Could not convert cmcd_key_ts (${cmcd_keys[key]}) to Date: ${dateError.message}`);
+                    }
+                }
+                if (key === "url") {
+                    try {
+                        const url = new URL(cmcd_keys[key]);
+                        dataToPublish['cmcd_key_url_domain'] = url.hostname;
+                    } catch (urlError) {
+                        console.warn(`Could not parse URL for cmcd_key_url: ${cmcd_keys[key]}`);
+                        dataToPublish['cmcd_key_url_domain'] = null;
                     }
                 }
             });

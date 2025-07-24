@@ -60,6 +60,7 @@
     { "name": "cmcd_key_tab", "type": "INTEGER", "mode": "NULLABLE", "description": "Top aggregated encoded bitrate (kbps)"},
     { "name": "cmcd_key_lab", "type": "INTEGER", "mode": "NULLABLE", "description": "Lowest aggregated encoded bitrate (kbps)"},
     { "name": "cmcd_key_url", "type": "STRING", "mode": "NULLABLE", "description": "Request URL"},
+    { "name": "cmcd_key_url_domain", "type": "STRING", "mode": "NULLABLE", "description": "Request URL domain"},
     { "name": "cmcd_key_pt", "type": "INTEGER", "mode": "NULLABLE", "description": "Playhead time (ms)"},
     { "name": "cmcd_key_ec", "type": "STRING", "mode": "NULLABLE", "description": "Player error code"},
     { "name": "cmcd_key_msd", "type": "INTEGER", "mode": "NULLABLE", "description": "Media start delay (ms)"},
