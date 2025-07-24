@@ -72,6 +72,54 @@ const CORS = (req, res) => {
     }   
 }
 
+/**
+ * Processes a single CMCD data object, enriches it with request metadata,
+ * and publishes it to Pub/Sub.
+ * @param {object} req - The Express request object.
+ * @param {string} cmcdMode - The mode ('event' or 'response').
+ * @param {object} cmcdKeys - The parsed CMCD key-value pairs.
+ * @param {string} rawData - The original raw CMCD data string.
+ * @returns {Promise<string|null>} A promise that resolves with the message ID on success or null on failure.
+ */
+const processAndPublishCmcd = (req, cmcdMode, cmcdKeys, rawData) => {
+    const dataToPublish = {
+        request_user_agent: req.headers['user-agent'] || null,
+        request_origin: req.headers['origin'] || null,
+        request_ip: req.ip || null,
+        request_datetime: new Date().toISOString(),
+        cmcd_mode: cmcdMode,
+        cmcd_data: rawData,
+    };
+
+    Object.keys(cmcdKeys).forEach(key => {
+        dataToPublish[`cmcd_key_${key}`] = cmcdKeys[key];
+        if (key === "ts" && typeof cmcdKeys[key] === 'number') {
+            try {
+                dataToPublish[`cmcd_key_ts_date`] = new Date(cmcdKeys[key]).toISOString();
+            } catch (dateError) {
+                console.warn(`Could not convert cmcd_key_ts (${cmcdKeys[key]}) to Date: ${dateError.message}`);
+            }
+        }
+        if (key === "url") {
+            try {
+                const url = new URL(cmcdKeys[key]);
+                dataToPublish['cmcd_key_url_domain'] = url.hostname;
+            } catch (urlError) {
+                console.warn(`Could not parse URL for cmcd_key_url: ${cmcdKeys[key]}`);
+                dataToPublish['cmcd_key_url_domain'] = null;
+            }
+        }
+    });
+
+    const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
+    
+    return pubsubTopic.publishMessage({ data: messageBuffer })
+        .catch(err => {
+            console.error(`Failed to publish a message: ${err.message}. Data: ${JSON.stringify(dataToPublish)}`);
+            return null;
+        });
+};
+
 // --- Main HTTP Function ---
 functions.http('cmcdProcessor', async (req, res) => {
     // Set CORS
@@ -114,44 +162,7 @@ functions.http('cmcdProcessor', async (req, res) => {
                     continue; 
                 }
 
-                const dataToPublish = {};
-                dataToPublish['request_user_agent'] = req.headers['user-agent'] || null;
-                dataToPublish['request_origin'] = req.headers['origin'] || null;
-                dataToPublish['request_ip'] = req.ip || null;
-                dataToPublish['request_datetime'] = new Date().toISOString();
-                dataToPublish['cmcd_mode'] = cmcdMode;
-
-                Object.keys(cmcd_item).forEach(key => {
-                    dataToPublish[`cmcd_key_${key}`] = cmcd_item[key];
-                    if (key === "ts" && typeof cmcd_item[key] === 'number') {
-                        try {
-                            dataToPublish[`cmcd_key_ts_date`] = new Date(cmcd_item[key]).toISOString();
-                        } catch (dateError) {
-                            console.warn(`Could not convert cmcd_key_ts (${cmcd_item[key]}) to Date: ${dateError.message}`);
-                        }
-                    }
-                    if (key === "url") {
-                        try {
-                            const url = new URL(cmcd_item[key]);
-                            dataToPublish['cmcd_key_url_domain'] = url.hostname;
-                        } catch (urlError) {
-                            console.warn(`Could not parse URL for cmcd_key_url: ${cmcd_item[key]}`);
-                        }
-                    }
-                });
-                dataToPublish['cmcd_data'] = JSON.stringify(cmcd_item);
-
-                const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
-                
-                // Collect the promise in the array.
-                publishPromises.push(
-                    pubsubTopic.publishMessage({ data: messageBuffer })
-                        .catch(err => {
-                            // Log individual message publish errors without failing the whole batch
-                            console.error(`Failed to publish a message: ${err.message}. Data: ${JSON.stringify(dataToPublish)}`);
-                            return null; // Return null so Promise.allSettled can distinguish success/failure
-                        })
-                );
+                publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcd_item, JSON.stringify(cmcd_item)));
                 messagesProcessed++;
             }
             
@@ -170,44 +181,7 @@ functions.http('cmcdProcessor', async (req, res) => {
                 return res.status(400).send('Bad Request: Parsed CMCD data from query is empty.');
             }
 
-            const dataToPublish = {};
-            dataToPublish['request_user_agent'] = req.headers['user-agent'] || null;
-            dataToPublish['request_origin'] = req.headers['origin'] || null;
-            dataToPublish['request_ip'] = req.ip || null;
-            dataToPublish['request_datetime'] = new Date().toISOString();
-            dataToPublish['cmcd_mode'] = cmcdMode;
-
-            Object.keys(cmcd_keys).forEach(key => {
-                dataToPublish[`cmcd_key_${key}`] = cmcd_keys[key];
-                if (key === "ts" && typeof cmcd_keys[key] === 'number') {
-                    try {
-                        dataToPublish[`cmcd_key_ts_date`] = new Date(cmcd_keys[key]).toISOString();
-                    } catch (dateError) {
-                        console.warn(`Could not convert cmcd_key_ts (${cmcd_keys[key]}) to Date: ${dateError.message}`);
-                    }
-                }
-                if (key === "url") {
-                    try {
-                        const url = new URL(cmcd_keys[key]);
-                        dataToPublish['cmcd_key_url_domain'] = url.hostname;
-                    } catch (urlError) {
-                        console.warn(`Could not parse URL for cmcd_key_url: ${cmcd_keys[key]}`);
-                        dataToPublish['cmcd_key_url_domain'] = null;
-                    }
-                }
-            });
-            dataToPublish['cmcd_data'] = rawData;
-
-            const messageBuffer = Buffer.from(JSON.stringify(dataToPublish));
-            
-            // Publish the message without await for query parameter too
-            publishPromises.push(
-                pubsubTopic.publishMessage({ data: messageBuffer })
-                    .catch(err => {
-                        console.error(`Failed to publish query param message: ${err.message}. Data: ${JSON.stringify(dataToPublish)}`);
-                        return null;
-                    })
-            );
+            publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcd_keys, rawData));
             messagesProcessed++;
         }
 
