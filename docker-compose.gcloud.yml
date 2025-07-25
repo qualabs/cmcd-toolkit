@@ -29,6 +29,8 @@ services:
       - bigquery_secret_pem
     volumes:
       - ./grafana/gcloud-stack:/etc/grafana/provisioning/datasources
+      - ./grafana/gcloud-stack/dashboards:/etc/grafana/provisioning/dashboards
+
 
 secrets:
   bigquery_secret_json:
