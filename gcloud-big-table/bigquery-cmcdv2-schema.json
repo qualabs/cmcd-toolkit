@@ -46,7 +46,7 @@
     { "name": "cmcd_key_sid", "type": "STRING", "mode": "NULLABLE", "description": "Session ID"},
     { "name": "cmcd_key_bg", "type": "BOOLEAN", "mode": "NULLABLE", "description": "Backgrounded"},
     { "name": "cmcd_key_sta", "type": "STRING", "mode": "NULLABLE", "description": "State"},
-    { "name": "cmcd_key_sn", "type": "STRING", "mode": "NULLABLE", "description": "Sequence Number"},
+    { "name": "cmcd_key_sn", "type": "INTEGER", "mode": "NULLABLE", "description": "Sequence Number"},
     { "name": "cmcd_key_st", "type": "STRING", "mode": "NULLABLE", "description": "Stream type"},
     { "name": "cmcd_key_su", "type": "BOOLEAN", "mode": "NULLABLE", "description": "Startup"},
     { "name": "cmcd_key_ttfb", "type": "INTEGER", "mode": "NULLABLE", "description": "Time to first byte (ms)"},
