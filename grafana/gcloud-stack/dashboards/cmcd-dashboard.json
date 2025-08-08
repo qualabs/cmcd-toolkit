@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
+  "id": 3,
   "links": [],
   "panels": [
     {
@@ -110,9 +110,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "-- Returns the count of requests over time.\n-- Use this for a \"Requests per minute/hour\" graph.\nSELECT\n  $__timeGroup(request_datetime, '1m') AS time, -- Groups data into time buckets (e.g., 5 minutes)\n  COUNT(*) AS requests_over_time\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime) -- Filters data based on the Grafana dashboard's time range\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time\n",
+          "rawSql": "-- Returns the count of requests over time.\n-- Use this for a \"Requests per minute/hour\" graph.\nSELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time, -- Groups data into time buckets (e.g., 5 minutes)\n  COUNT(*) AS requests_over_time\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime) -- Filters data based on the Grafana dashboard's time range\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -204,9 +204,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    request_country_name\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  request_country_name AS country,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  request_country_name IS NOT NULL\nGROUP BY\n  country\nORDER BY\n  percentage DESC\nLIMIT 20",
+          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    request_country_name\n  FROM\n      ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND (cmcd_key_su IS NOT TRUE OR cmcd_key_su IS NULL)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  request_country_name AS country,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  request_country_name IS NOT NULL\nGROUP BY\n  country\nORDER BY\n  percentage DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -299,9 +299,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_cid\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  cmcd_key_cid AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_cid IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
+          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_cid\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND (cmcd_key_su IS NOT TRUE OR cmcd_key_su IS NULL)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  cmcd_key_cid AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_cid IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -393,9 +393,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    request_asn_organization\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  request_asn_organization AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  request_asn_organization IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
+          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    request_asn_organization\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND (cmcd_key_su IS NOT TRUE OR cmcd_key_su IS NULL)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  request_asn_organization AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  request_asn_organization IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -487,9 +487,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_url_domain\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \n  )\nSELECT\n  cmcd_key_url_domain AS cdn,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_url_domain IS NOT NULL\nGROUP BY\n  cdn\nORDER BY\n  percentage DESC\nLIMIT 20",
+          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_url_domain\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND (cmcd_key_su IS NOT TRUE OR cmcd_key_su IS NULL)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \n  )\nSELECT\n  cmcd_key_url_domain AS cdn,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_url_domain IS NOT NULL\nGROUP BY\n  cdn\nORDER BY\n  percentage DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -518,7 +518,113 @@
         "type": "grafana-bigquery-datasource",
         "uid": "P67060240DC0051B8"
       },
-      "description": "Measures what percentage of total viewing time a user spent waiting for the video to load (rebuffering). A low value is ideal.\n",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "id": 32,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  COUNT(DISTINCT cmcd_key_sid) AS unique_sessions\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_bs",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "request_datetime",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "request_datetime",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "#Sessions",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "description": "Measures what percentage of total sessions with re-buffering events while playing",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -543,8 +649,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 12,
-        "x": 0,
+        "w": 6,
+        "x": 6,
         "y": 16
       },
       "id": 25,
@@ -573,9 +679,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH Durations AS (\n  SELECT\n    cmcd_key_sta,\n    -- Calculate duration of each state\n    TIMESTAMP_DIFF(\n      LEAD(request_datetime, 1) OVER (PARTITION BY cmcd_key_sid ORDER BY request_datetime),\n      request_datetime,\n      MILLISECOND\n    ) AS duration_ms\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_sta IS NOT NULL\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nAggregatedTime AS (\n  SELECT\n    -- Sum duration for 'buffering' state\n    SUM(IF(cmcd_key_sta = 'r', duration_ms, 0)) AS buffering_time_ms,\n    -- Sum duration for 'playing' state\n    SUM(IF(cmcd_key_sta = 'p' OR cmcd_key_sta = 'k' OR cmcd_key_sta = 's' OR cmcd_key_sta='a', duration_ms, 0)) AS playing_time_ms\n  FROM Durations\n)\nSELECT\n  -- Calculate ratio: (buffering_time / (playing_time + buffering_time)) * 100\n  SAFE_DIVIDE(buffering_time_ms * 100, playing_time_ms + buffering_time_ms) AS rebuffering_ratio_percentage\nFROM\n  AggregatedTime\n",
+          "rawSql": "WITH SessionStats AS (\n  SELECT\n    -- Denominator: Count all unique sessions that match the filters.\n    COUNT(DISTINCT cmcd_key_sid) AS total_unique_sessions,\n\n    -- Numerator: Count unique sessions that had at least one startup rebuffering event.\n    COUNT(DISTINCT IF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE, cmcd_key_sid, NULL)) AS sessions_with_playback_rebuffering\n\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  -- Calculate the final percentage\n  SAFE_DIVIDE(sessions_with_playback_rebuffering, total_unique_sessions) AS startup_rebuffering_sessions_percentage\nFROM\n  SessionStats",
           "refId": "A",
           "sql": {
             "columns": [
@@ -596,7 +702,7 @@
           }
         }
       ],
-      "title": "Rebufering Ratio",
+      "title": "Session with Rebuffering",
       "type": "gauge"
     },
     {
@@ -665,9 +771,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_sid\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  cmcd_key_sid AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_sid IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
+          "rawSql": "WITH StarvationEvents AS (\n  SELECT\n    cmcd_key_sid\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_bs IS TRUE\n    AND (cmcd_key_su IS NOT TRUE OR cmcd_key_su IS NULL)\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n)\nSELECT\n  cmcd_key_sid AS metric,\n  (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM StarvationEvents)) AS percentage\nFROM\n  StarvationEvents\nWHERE\n  cmcd_key_sid IS NOT NULL\nGROUP BY\n  metric\nORDER BY\n  percentage DESC\nLIMIT 20",
           "refId": "A",
           "sql": {
             "columns": [
@@ -823,9 +929,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  request_country_code AS metric, -- Uses 2-letter country code\n  COUNT(DISTINCT cmcd_key_sid) AS value\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_country_code IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  metric",
+          "rawSql": "SELECT\n  request_country_code AS metric, -- Uses 2-letter country code\n  COUNT(DISTINCT cmcd_key_sid) AS value\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_country_code IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  metric",
           "refId": "A",
           "sql": {
             "columns": [
@@ -956,9 +1062,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  request_browser_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  request_browser_name\nLIMIT\n  50",
+          "rawSql": "SELECT\n  request_browser_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  request_browser_name\nLIMIT\n  50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1042,9 +1148,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  request_country_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_country_name\nLIMIT\n  50",
+          "rawSql": "SELECT\n  request_country_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_country_name\nLIMIT\n  50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1137,9 +1243,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  request_asn_organization AS ASN,\n  COUNT(DISTINCT cmcd_key_sid) AS sessions,\n  AVG(cmcd_key_mtp) AS mean_throughput\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_asn_organization IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  ASN\nORDER BY\n  sessions DESC\nLIMIT 10",
+          "rawSql": "SELECT\n  request_asn_organization AS ASN,\n  COUNT(DISTINCT cmcd_key_sid) AS sessions,\n  AVG(cmcd_key_mtp) AS mean_throughput,\n  COUNTIF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE) AS non_startup_buffer_starvations\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_asn_organization IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  ASN\nORDER BY\n  sessions DESC\nLIMIT 10",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1172,6 +1278,7 @@
             "renameByName": {
               "ASN": "",
               "mean_throughput": "AVG Throughput (kbps)",
+              "non_startup_buffer_starvations": "#Buffer starvation",
               "sessions": "Sessions"
             }
           }
@@ -1270,9 +1377,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  COUNT(DISTINCT cmcd_key_sid) AS unique_sessions\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  COUNT(DISTINCT cmcd_key_sid) AS unique_sessions\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1387,9 +1494,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_mtp)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_datetime\nLIMIT\n  50",
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_mtp)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_mtp < 50000\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_datetime",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1511,9 +1618,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  AVG(cmcd_key_br) AS selected_bitrate_kbps,\n  AVG(cmcd_key_mtp) AS avg_measured_throughput_kbps,\n  MIN(cmcd_key_mtp) AS min_measured_throughput_kbps,\n  MAX(cmcd_key_mtp) AS max_measured_throughput_kbps\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_br IS NOT NULL\n  AND cmcd_key_mtp IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_br) AS selected_bitrate_kbps,\n  AVG(cmcd_key_mtp) AS avg_measured_throughput_kbps,\n  MIN(cmcd_key_mtp) AS min_measured_throughput_kbps,\n  MAX(cmcd_key_mtp) AS max_measured_throughput_kbps\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_br IS NOT NULL\n  AND cmcd_key_mtp IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1628,9 +1735,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  AVG(cmcd_key_mtp) AS average_throughput_kbps,\n  MAX(cmcd_key_mtp) AS max_throughput_kbps,\n  MIN(cmcd_key_mtp) AS miN_throughput_kbps\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_mtp IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_mtp) AS average_throughput_kbps,\n  MAX(cmcd_key_mtp) AS max_throughput_kbps,\n  MIN(cmcd_key_mtp) AS miN_throughput_kbps\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_mtp IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1762,9 +1869,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '10s') AS time,\n  AVG(cmcd_key_bl) AS Average_Buffer_ms,\n  MAX(cmcd_key_bl) AS max_Buffer_ms,\n  MIN(cmcd_key_bl) AS min_Buffer_ms\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_bl IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_bl) AS Average_Buffer_ms,\n  MAX(cmcd_key_bl) AS max_Buffer_ms,\n  MIN(cmcd_key_bl) AS min_Buffer_ms\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_bl IS NOT NULL\n  AND cmcd_key_ot = 'v'\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -1879,9 +1986,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  COUNTIF(cmcd_key_bs IS TRUE) AS Buffer_Starvations\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  COUNTIF(cmcd_key_bs IS TRUE) AS Buffer_Starvations\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_su IS NOT TRUE\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2013,9 +2120,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '10s') AS time,\n  cmcd_key_br AS br,\n  cmcd_key_mtp as mtp\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid = '${cmcd_key_sid:raw}' -- Filter by the session ID selected in the dashboard\n  AND cmcd_key_br IS NOT NULL\n  AND cmcd_key_ot = 'v'\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  cmcd_key_br AS br,\n  cmcd_key_mtp as mtp\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid = '${cmcd_key_sid:raw}' -- Filter by the session ID selected in the dashboard\n  AND cmcd_key_br IS NOT NULL\n  AND cmcd_key_ot = 'v'\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2170,9 +2277,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  request_datetime AS time,\n  cmcd_key_sta AS state -- The state name (e.g., 'playing', 'paused')\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid = '${cmcd_key_sid:raw}' -- Filter by the session ID selected in the dashboard\nORDER BY\n  time",
+          "rawSql": "SELECT\n  request_datetime AS time,\n  cmcd_key_sta AS state -- The state name (e.g., 'playing', 'paused')\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid = '${cmcd_key_sid:raw}' -- Filter by the session ID selected in the dashboard\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2287,9 +2394,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '10s') AS time,\n  AVG(cmcd_key_ltc) AS avg_latency,\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_ltc) AS avg_latency,\n  MAX(cmcd_key_ltc) AS max_avg_latency,\n  MIN(cmcd_key_ltc) AS max_avg_latency,\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2379,9 +2486,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "WITH LatencyData AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_ltc\n  FROM\n    `${table_name}`\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ltc IS NOT NULL\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    cmcd_key_cid,\n    -- Calculate approximate percentiles for latency\n    APPROX_QUANTILES(cmcd_key_ltc, 100) AS quantiles\n  FROM\n    LatencyData\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(50)] AS p50_latency,\n  p.quantiles[OFFSET(75)] AS p75_latency,\n  p.quantiles[OFFSET(95)] AS p95_latency,\n  p.quantiles[OFFSET(99)] AS p99_latency,\n  -- Calculate other stats\n  AVG(ld.cmcd_key_ltc) AS avg_latency,\n  MIN(ld.cmcd_key_ltc) AS min_latency,\n  MAX(ld.cmcd_key_ltc) AS max_latency\nFROM\n  Percentiles p\nJOIN\n  LatencyData ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p50_latency,\n  p75_latency,\n  p95_latency,\n  p99_latency\nORDER BY\n  p95_latency DESC",
+          "rawSql": "WITH LatencyData AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_ltc\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ltc IS NOT NULL\n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    cmcd_key_cid,\n    -- Calculate approximate percentiles for latency\n    APPROX_QUANTILES(cmcd_key_ltc, 100) AS quantiles\n  FROM\n    LatencyData\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(50)] AS p50_latency,\n  p.quantiles[OFFSET(75)] AS p75_latency,\n  p.quantiles[OFFSET(95)] AS p95_latency,\n  p.quantiles[OFFSET(99)] AS p99_latency,\n  -- Calculate other stats\n  AVG(ld.cmcd_key_ltc) AS avg_latency,\n  MIN(ld.cmcd_key_ltc) AS min_latency,\n  MAX(ld.cmcd_key_ltc) AS max_latency\nFROM\n  Percentiles p\nJOIN\n  LatencyData ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p50_latency,\n  p75_latency,\n  p95_latency,\n  p99_latency\nORDER BY\n  p95_latency DESC",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2480,9 +2587,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_msd)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  cmcd_key_sid\nLIMIT\n  200",
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_msd)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  cmcd_key_sid\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2605,9 +2712,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '10s') AS time,\n  MIN(cmcd_key_msd) AS min_media_start_delay,\n  AVG(cmcd_key_msd) AS avg_media_start_delay,\n  MAX(cmcd_key_msd) AS max_media_start_delay \nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  MIN(cmcd_key_msd) AS min_media_start_delay,\n  AVG(cmcd_key_msd) AS avg_media_start_delay,\n  MAX(cmcd_key_msd) AS max_media_start_delay \nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2708,9 +2815,9 @@
           "format": 1,
           "hide": false,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_cid),\n  COUNT(DISTINCT cmcd_key_sid),\n  AVG(cmcd_key_msd),\n  COUNT(cmcd_key_bs),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_cid\nLIMIT\n  50",
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_cid),\n  COUNT(DISTINCT cmcd_key_sid),\n  AVG(cmcd_key_msd),\n  COUNTIF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_cid\nLIMIT\n  50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -2923,9 +3030,9 @@
           "format": 1,
           "hide": false,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_sid),\n  ANY_VALUE(cmcd_key_cid),\n  ANY_VALUE(cmcd_key_msd),\n  COUNT(cmcd_key_bs),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_sid\nLIMIT\n  50",
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_sid),\n  ANY_VALUE(cmcd_key_cid),\n  ANY_VALUE(cmcd_key_msd),\n  COUNTIF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_sid\nLIMIT\n  50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3119,7 +3226,12 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": []
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "#Buffer Starvation"
+          }
+        ]
       },
       "pluginVersion": "12.0.2",
       "targets": [
@@ -3133,9 +3245,9 @@
           "format": 1,
           "hide": false,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(request_user_agent),\n  COUNT(DISTINCT cmcd_key_sid),\n  AVG(cmcd_key_msd),\n  COUNT(cmcd_key_bs),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_user_agent\nLIMIT\n  50",
+          "rawSql": "SELECT\n  ANY_VALUE(request_user_agent),\n  COUNT(DISTINCT cmcd_key_sid),\n  AVG(cmcd_key_msd),\n  COUNTIF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE),\n  AVG(cmcd_key_ltc),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_user_agent\nLIMIT\n  50",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3335,9 +3447,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_url_domain),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb),\n  AVG(cmcd_key_mtp),\n  COUNT(cmcd_key_bs),\n  COUNT(DISTINCT cmcd_key_sid)\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_url_domain IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_url_domain",
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_url_domain),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb),\n  AVG(cmcd_key_mtp),\n  COUNTIF(cmcd_key_bs IS TRUE AND cmcd_key_su IS NOT TRUE),\n  COUNT(DISTINCT cmcd_key_sid)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_url_domain IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_url_domain",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3419,8 +3531,8 @@
               "f1_": "AVG ttfb",
               "f2_": "AVG ttlb",
               "f3_": "AVG Thruput ",
-              "f4_": "Count Buffer Starved",
-              "f5_": "Count Sessions"
+              "f4_": "#Buffer Starvation",
+              "f5_": "#Sessions"
             }
           }
         }
@@ -3517,9 +3629,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 200 AND cmcd_key_rc < 300) * 100.0, COUNT(*)) AS HTTP_Success,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 400 AND cmcd_key_rc < 500) * 100.0, COUNT(*)) AS HTTP_Client_Error,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 500 AND cmcd_key_rc < 600) * 100.0, COUNT(*)) AS HTTP_Server_Error\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_rc IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 200 AND cmcd_key_rc < 300) * 100.0, COUNT(*)) AS HTTP_Success,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 400 AND cmcd_key_rc < 500) * 100.0, COUNT(*)) AS HTTP_Client_Error,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 500 AND cmcd_key_rc < 600) * 100.0, COUNT(*)) AS HTTP_Server_Error\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_rc IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3633,9 +3745,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '1m') AS time,\n  AVG(cmcd_key_ttfb) AS avg_ttfb,\n  MIN(cmcd_key_ttfb) AS min_ttfb,\n  MAX(cmcd_key_ttfb) AS max_ttfb\nFROM\n  `${table_name}`\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ttfb IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_ttfb) AS avg_ttfb,\n  MIN(cmcd_key_ttfb) AS min_ttfb,\n  MAX(cmcd_key_ttfb) AS max_ttfb\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ttfb IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
           "refId": "A",
           "sql": {
             "columns": [
@@ -3688,9 +3800,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT cmcd_key_cid FROM `${table_name}` WHERE cmcd_key_cid IS NOT NULL ORDER BY cmcd_key_cid\n",
+          "rawSql": "SELECT DISTINCT cmcd_key_cid FROM ${table_name} WHERE cmcd_key_cid IS NOT NULL ORDER BY cmcd_key_cid\n",
           "refId": "tempvar",
           "sql": {
             "columns": [
@@ -3736,9 +3848,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT cmcd_key_sid FROM `${table_name}` WHERE cmcd_key_sid IS NOT NULL ORDER BY cmcd_key_sid\n",
+          "rawSql": "SELECT DISTINCT cmcd_key_sid FROM ${table_name} WHERE cmcd_key_sid IS NOT NULL ORDER BY cmcd_key_sid\n",
           "refId": "tempvar",
           "sql": {
             "columns": [
@@ -3766,9 +3878,7 @@
         "allValue": "__all__",
         "current": {
           "text": "All",
-          "value": [
-            "$__all"
-          ]
+          "value": "$__all"
         },
         "datasource": {
           "type": "grafana-bigquery-datasource",
@@ -3784,9 +3894,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT request_country_code FROM `${table_name}` WHERE request_country_code IS NOT NULL ORDER BY request_country_code\n",
+          "rawSql": "SELECT DISTINCT request_country_code FROM ${table_name} WHERE request_country_code IS NOT NULL ORDER BY request_country_code\n",
           "refId": "tempvar",
           "sql": {
             "columns": [
@@ -3832,9 +3942,9 @@
           "editorMode": "code",
           "format": 1,
           "location": "",
-          "project": "gloud-cmcd-v2",
+          "project": "ibc-2025-low-latency",
           "rawQuery": true,
-          "rawSql": "SELECT DISTINCT request_browser_name FROM `${table_name}` WHERE request_browser_name IS NOT NULL ORDER BY request_browser_name",
+          "rawSql": "SELECT DISTINCT request_browser_name FROM ${table_name} WHERE request_browser_name IS NOT NULL ORDER BY request_browser_name",
           "refId": "tempvar",
           "sql": {
             "columns": [
@@ -3865,25 +3975,72 @@
       },
       {
         "current": {
-          "text": "${table_name}",
-          "value": "${table_name}"
+          "text": "ibc-2025-low-latency.cmcd.cmcd",
+          "value": "ibc-2025-low-latency.cmcd.cmcd"
         },
         "hide": 2,
         "label": "Table Name",
         "name": "table_name",
-        "query": "cmcdv2-bigquery.cmcd.cmcd",
+        "query": "ibc-2025-low-latency.cmcd.cmcd",
         "skipUrlSync": true,
         "type": "constant"
+      },
+      {
+        "auto": true,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "text": "$__auto",
+          "value": "$__auto"
+        },
+        "description": "",
+        "label": "Time aggregate",
+        "name": "time_aggregate",
+        "options": [
+          {
+            "selected": false,
+            "text": "1s",
+            "value": "1s"
+          },
+          {
+            "selected": false,
+            "text": "5s",
+            "value": "5s"
+          },
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10s"
+          },
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          }
+        ],
+        "query": "1s,5s,10s,30s,1m,10m",
+        "refresh": 2,
+        "type": "interval"
       }
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "GCloud CMCD v2",
-  "uid": "ff5fe6cb-6a98-4440-ae55-212957b536ff",
-  "version": 164
+  "title": "CMCD v2 realtime",
+  "uid": "4ac85d82-f866-4dfb-a8af-88ad893adc89",
+  "version": 73
 }
