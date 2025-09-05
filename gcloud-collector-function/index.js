@@ -154,15 +154,30 @@ functions.http('cmcdProcessor', async (req, res) => {
 
             const cmcdDataArray = Array.isArray(req.body) ? req.body : [req.body];
 
-            for (const cmcd_item of cmcdDataArray) {
-                if (Object.keys(cmcd_item).length === 0) {
+            for (const cmcdDataItem of cmcdDataArray) {
+                if (Object.keys(cmcdDataItem).length === 0) {
                     console.warn('Encountered an empty CMCD object in the JSON array.');
                     // Potentially skip this item or return an error for the whole request
                     // For now, we'll skip it and continue processing others.
                     continue; 
                 }
 
-                publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcd_item, JSON.stringify(cmcd_item)));
+                publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcdDataItem, JSON.stringify(cmcdDataItem)));
+                messagesProcessed++;
+            }
+        } else if (contentType && (contentType.startsWith('application/cmcd+text')) || contentType.startsWith('text/cmcd')) {
+            // Plain Text Handling
+            const cmcdDataArray = req.body.toString('utf8').split('\n');
+
+            for (const cmcdDataItem of cmcdDataArray) {
+                const cmcdData = parseCMCDQueryToJson(decodeURIComponent(cmcdDataItem));
+                if (Object.keys(cmcdData).length === 0) {
+                    console.warn('Encountered an empty CMCD object in the JSON array.');
+                    // Potentially skip this item or return an error for the whole request
+                    // For now, we'll skip it and continue processing others.
+                    continue; 
+                }
+                publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcdData, cmcdDataItem));
                 messagesProcessed++;
             }
             
@@ -174,14 +189,14 @@ functions.http('cmcdProcessor', async (req, res) => {
                 return res.status(400).send('Bad Request: CMCD data not found in query parameters or JSON payload.');
             }
 
-            const cmcd_keys = parseCMCDQueryToJson(rawData);
+            const cmcdData = parseCMCDQueryToJson(rawData);
 
-            if (Object.keys(cmcd_keys).length === 0) {
+            if (Object.keys(cmcdData).length === 0) {
                 console.warn('Parsed CMCD data from query is empty.');
                 return res.status(400).send('Bad Request: Parsed CMCD data from query is empty.');
             }
 
-            publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcd_keys, rawData));
+            publishPromises.push(processAndPublishCmcd(req, cmcdMode, cmcdData, rawData));
             messagesProcessed++;
         }
 
