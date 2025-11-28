@@ -1,0 +1,2584 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 5,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 37,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  COUNT(distinct cmcd_key_sid)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)   \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "*",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Total sessions registered",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 38,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  COUNT(distinct cmcd_key_sid)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)   \n  AND cmcd_key_ltc < 15000\n  AND cmcd_key_ltc > 0\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "*",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Total sessions filtered",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  request_browser_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  \n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000    \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  request_browser_name\nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Browsers",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  request_country_name,\n  COUNT(distinct cmcd_key_sid),\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000      \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  request_country_name\nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "request_browser_name",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Sessions per country",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 10,
+        "x": 0,
+        "y": 8
+      },
+      "id": 8,
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": true,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "fixed": "dark-green"
+                },
+                "opacity": 0.6,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "value",
+                  "fixed": 6,
+                  "max": 15,
+                  "min": 2
+                },
+                "symbol": {
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "symbolAlign": {
+                  "horizontal": "center",
+                  "vertical": "center"
+                },
+                "text": {
+                  "field": "value",
+                  "fixed": "",
+                  "mode": "field"
+                },
+                "textConfig": {
+                  "fontSize": 15,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "middle"
+                }
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "A"
+            },
+            "location": {
+              "lookup": "metric",
+              "mode": "lookup"
+            },
+            "name": "Layer 1",
+            "tooltip": true,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 1
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  request_country_code AS metric, -- Uses 2-letter country code\n  COUNT(DISTINCT cmcd_key_sid) AS value\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_country_code IS NOT NULL\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000  \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  metric",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_sid",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "request_longitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "parameters": [
+                  {
+                    "name": "request_latitude",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "request_longitude",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              },
+              {
+                "property": {
+                  "name": "request_latitude",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Sessions",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "f0_": "Sessions",
+              "request_latitude": "Latitude",
+              "request_longitude": "Longitude"
+            }
+          }
+        }
+      ],
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 14,
+        "x": 10,
+        "y": 8
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  COUNT(DISTINCT cmcd_key_sid) AS unique_sessions\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000  \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_bs",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "request_datetime",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "request_datetime",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "# Sessions over time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
+      "id": 16,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  request_asn_organization AS ASN,\n  COUNT(DISTINCT cmcd_key_sid) AS sessions,\n  AVG(cmcd_key_mtp) AS mean_throughput,\n  COUNTIF( (cmcd_key_bs IS TRUE OR cmcd_key_sta = \"r\" ) AND cmcd_key_su IS NOT TRUE and cmcd_key_ot = \"v\") AS non_startup_buffer_starvations\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND request_asn_organization IS NOT NULL\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000      \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  ASN\nORDER BY\n  sessions DESC\nLIMIT 10",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Top 10 ASNs by Sessions",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "ASN": "",
+              "mean_throughput": "AVG Throughput (kbps)",
+              "non_startup_buffer_starvations": "#Rebuffer",
+              "sessions": "Sessions"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 1,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Content ID"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "hide": false,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_cid),\n  COUNT(DISTINCT cmcd_key_sid),\n  COUNT(cmcd_key_cid),\n  AVG(cmcd_key_msd),\n  COUNTIF( (cmcd_key_bs IS TRUE OR cmcd_key_sta = \"r\") AND cmcd_key_su IS NOT TRUE AND cmcd_key_ot= \"v\"),\n  COUNTIF( (cmcd_key_bs IS TRUE OR cmcd_key_sta = \"r\") AND cmcd_key_su IS NOT TRUE AND cmcd_key_ot= \"v\") / COUNT(DISTINCT cmcd_key_sid),\n  AVG(CASE WHEN cmcd_key_sta = \"p\" THEN cmcd_key_ltc ELSE NULL END),\n  AVG(cmcd_key_mtp),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_cid IS NOT NULL\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_cid\nLIMIT\n  50",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_cid",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_msd",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_bs",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_ltc",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_mtp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_ttfb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "COUNT",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_sid",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "cmcd_key_cid",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Content",
+      "transformations": [
+        {
+          "id": "filterFieldsByName",
+          "options": {
+            "byVariable": false,
+            "include": {
+              "names": [
+                "f0_",
+                "f1_",
+                "f2_",
+                "f3_",
+                "f4_",
+                "f5_",
+                "f6_",
+                "f7_",
+                "f8_",
+                "f9_"
+              ]
+            }
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "f0_": "Content ID",
+              "f1_": "#Sessions",
+              "f2_": "#CMCD records",
+              "f3_": "AVG Media Start Delay (ms)",
+              "f4_": "#Rebuffer",
+              "f5_": "#Rebuffer / Sessions",
+              "f6_": "AVG Latency (ms)",
+              "f7_": "AVG Throughput (ms)",
+              "f8_": "AVG ttfb (ms)",
+              "f9_": "AVG ttlb (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 20,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "id": 17,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Content ID"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "WITH LatencyData AS (\n  SELECT\n    cmcd_key_sid,\n    cmcd_key_cid,\n    cmcd_key_ltc\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_sid IS NOT NULL\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ltc IS NOT NULL\n    AND cmcd_key_ltc > 0\n    AND cmcd_key_ltc < 15000\n    AND (cmcd_key_sta = \"p\" OR cmcd_key_sta = \"s\")    \n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    cmcd_key_cid,\n    -- Calculate approximate percentiles for latency\n    APPROX_QUANTILES(cmcd_key_ltc, 100) AS quantiles\n  FROM\n    LatencyData\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(25)] AS p25_latency,\n  p.quantiles[OFFSET(35)] AS p35_latency,\n  p.quantiles[OFFSET(50)] AS p50_latency,\n  p.quantiles[OFFSET(75)] AS p75_latency,\n  p.quantiles[OFFSET(95)] AS p95_latency,\n  p.quantiles[OFFSET(99)] AS p99_latency,\n  -- Calculate other stats\n  AVG(ld.cmcd_key_ltc) AS avg_latency,\n  STDDEV(ld.cmcd_key_ltc) AS stddev_latency,\n  MIN(ld.cmcd_key_ltc) AS min_latency,\n  MAX(ld.cmcd_key_ltc) AS max_latency\nFROM\n  Percentiles p\nJOIN\n  LatencyData ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p25_latency,\n  p35_latency,\n  p50_latency,\n  p75_latency,\n  p95_latency,\n  p99_latency\nORDER BY\n  p95_latency DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Latency Distribution by Content ID",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "avg_latency": "AVG Latency (ms)",
+              "content_id": "Content ID",
+              "max_latency": "MAX Latency (ms)",
+              "min_latency": "MIN Latency (ms)",
+              "p25_latency": "Latency 25% (ms)",
+              "p35_latency": "Latency 35% (ms)",
+              "p50_latency": "Latency 50% (ms)",
+              "p75_latency": " Latency 75% (ms)",
+              "p95_latency": "Latency 95% (ms)",
+              "p99_latency": "Latency 99% (ms)",
+              "stddev_latency": "STDDEV Latency (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false,
+            "minWidth": 52
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 67
+      },
+      "id": 33,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Content ID"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "WITH Data AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_msd\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_msd IS NOT NULL\n    AND cmcd_key_msd < 6000\n    AND cmcd_key_ltc > 0\n    AND cmcd_key_ltc < 15000    \n    AND (cmcd_key_sta = \"p\" OR cmcd_key_sta = \"s\")    \n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    cmcd_key_cid,\n    -- Calculate approximate percentiles for Media start Delay\n    APPROX_QUANTILES(cmcd_key_msd, 100) AS quantiles\n  FROM\n    Data\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(25)] AS p25_msd,\n  p.quantiles[OFFSET(35)] AS p35_msd,\n  p.quantiles[OFFSET(50)] AS p50_msd,\n  p.quantiles[OFFSET(75)] AS p75_msd,\n  p.quantiles[OFFSET(95)] AS p95_msd,\n  p.quantiles[OFFSET(99)] AS p99_msd,\n  -- Calculate other stats\n  AVG(ld.cmcd_key_msd) AS avg_msd,\n  STDDEV(ld.cmcd_key_msd) AS stddev_msd,\n  MIN(ld.cmcd_key_msd) AS min_msd,\n  MAX(ld.cmcd_key_msd) AS max_msd\nFROM\n  Percentiles p\nJOIN\n  Data ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p25_msd,\n  p35_msd,\n  p50_msd,\n  p75_msd,\n  p95_msd,\n  p99_msd\nORDER BY\n  p95_msd DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Startup Time distribution by Content ID",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "avg_latency": "AVG Latency (ms)",
+              "avg_msd": "AVG Startup (ms)",
+              "content_id": "Content ID",
+              "max_latency": "MAX Latency (ms)",
+              "max_msd": "MAX Startup (ms)",
+              "min_latency": "MIN Latency (ms)",
+              "min_msd": "MIN Startup (ms)",
+              "p25_latency": "p25 Latency (ms)",
+              "p25_msd": "Startup p25 (ms)",
+              "p35_latency": "p35 Latency (ms)",
+              "p35_msd": "Startup p35 (ms)",
+              "p50_latency": "p50 Latency (ms)",
+              "p50_msd": "Startup p50 (ms)",
+              "p75_latency": "p75 Latency (ms)",
+              "p75_msd": "Startup p75 (ms)",
+              "p95_latency": "p95 Latency (ms)",
+              "p95_msd": "Startup p95 (ms)",
+              "p99_latency": "p99 Latency (ms)",
+              "p99_msd": "Startup p99 (ms)",
+              "stddev_msd": "STDDEV Startup (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 86
+      },
+      "id": 35,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Content ID"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "WITH Data AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_ttfb as key_value\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ttfb IS NOT NULL\n    AND cmcd_key_ttfb > 0\n    AND cmcd_key_ltc > 0\n    AND cmcd_key_ltc < 15000    \n    AND (cmcd_key_sta = \"p\" OR cmcd_key_sta = \"s\")    \n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    d.cmcd_key_cid,\n    -- Calculate approximate percentiles for Media start Delay\n    APPROX_QUANTILES(d.key_value, 100) AS quantiles\n  FROM\n    Data d\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(25)] AS p25,\n  p.quantiles[OFFSET(35)] AS p35,\n  p.quantiles[OFFSET(50)] AS p50,\n  p.quantiles[OFFSET(75)] AS p75,\n  p.quantiles[OFFSET(95)] AS p95,\n  p.quantiles[OFFSET(99)] AS p99,\n  -- Calculate other stats\n  AVG(ld.key_value) AS key_avg,\n  STDDEV(ld.key_value) AS key_stddev,\n  MIN(ld.key_value) AS key_min,\n  MAX(ld.key_value) AS key_max\nFROM\n  Percentiles p\nJOIN\n  Data ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p25,\n  p35,\n  p50,\n  p75,\n  p95,\n  p99\nORDER BY\n  p95 DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "TTFB distribution by Content ID",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "avg_latency": "AVG Latency (ms)",
+              "avg_msd": "AVG Startup (ms)",
+              "content_id": "Content ID",
+              "key_avg": "AVG TTFB (ms)",
+              "key_max": "MAX TTFB (ms)",
+              "key_min": "MIN TTFB (ms)",
+              "key_stddev": "STDDEV TTFB (ms)",
+              "max_latency": "MAX Latency (ms)",
+              "max_msd": "MAX Startup (ms)",
+              "min_latency": "MIN Latency (ms)",
+              "min_msd": "MIN Startup (ms)",
+              "p25": "TTFB p25 (ms)",
+              "p25_latency": "p25 Latency (ms)",
+              "p25_msd": "Startup 25% (ms)",
+              "p35": "TTFB p35 (ms)",
+              "p35_latency": "p35 Latency (ms)",
+              "p35_msd": "Startup 35% (ms)",
+              "p50": "TTFB p50 (ms)",
+              "p50_latency": "p50 Latency (ms)",
+              "p50_msd": "Startup 50% (ms)",
+              "p75": "TTFB p75 (ms)",
+              "p75_latency": "p75 Latency (ms)",
+              "p75_msd": "Startup 75% (ms)",
+              "p95": "TTFB p95 (ms)",
+              "p95_latency": "p95 Latency (ms)",
+              "p95_msd": "Startup 95% (ms)",
+              "p99": "TTFB p99 (ms)",
+              "p99_latency": "p99 Latency (ms)",
+              "p99_msd": "Startup 99% (ms)",
+              "stddev_msd": "STDDEV Startup (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 105
+      },
+      "id": 36,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Content ID"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "WITH Data AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_ttlb as key_value\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ttlb IS NOT NULL\n    AND cmcd_key_ttlb > 0\n    AND cmcd_key_ltc > 0\n    AND cmcd_key_ltc < 15000\n    AND (cmcd_key_sta = \"p\" OR cmcd_key_sta = \"s\")    \n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    d.cmcd_key_cid,\n    -- Calculate approximate percentiles for Media start Delay\n    APPROX_QUANTILES(d.key_value, 100) AS quantiles\n  FROM\n    Data d\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(25)] AS p25,\n  p.quantiles[OFFSET(35)] AS p35,\n  p.quantiles[OFFSET(50)] AS p50,\n  p.quantiles[OFFSET(75)] AS p75,\n  p.quantiles[OFFSET(95)] AS p95,\n  p.quantiles[OFFSET(99)] AS p99,\n  -- Calculate other stats\n  AVG(ld.key_value) AS key_avg,\n  STDDEV(ld.key_value) AS key_stddev,\n  MIN(ld.key_value) AS key_min,\n  MAX(ld.key_value) AS key_max\nFROM\n  Percentiles p\nJOIN\n  Data ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p25,\n  p35,\n  p50,\n  p75,\n  p95,\n  p99\nORDER BY\n  p95 DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "TTLB distribution by Content ID",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "avg_latency": "AVG Latency (ms)",
+              "avg_msd": "AVG Startup (ms)",
+              "content_id": "Content ID",
+              "key_avg": "AVG TTLB (ms)",
+              "key_max": "MAX TTLB (ms)",
+              "key_min": "MIN TTLB (ms)",
+              "key_stddev": "STDDEV TTLB (ms)",
+              "max_latency": "MAX Latency (ms)",
+              "max_msd": "MAX Startup (ms)",
+              "min_latency": "MIN Latency (ms)",
+              "min_msd": "MIN Startup (ms)",
+              "p25": "TTLB p25 (ms)",
+              "p25_latency": "p25 Latency (ms)",
+              "p25_msd": "Startup 25% (ms)",
+              "p35": "TTLB p35 (ms)",
+              "p35_latency": "p35 Latency (ms)",
+              "p35_msd": "Startup 35% (ms)",
+              "p50": "TTLB p50 (ms)",
+              "p50_latency": "p50 Latency (ms)",
+              "p50_msd": "Startup 50% (ms)",
+              "p75": "TTLB p75 (ms)",
+              "p75_latency": "p75 Latency (ms)",
+              "p75_msd": "Startup 75% (ms)",
+              "p95": "TTLB p95 (ms)",
+              "p95_latency": "p95 Latency (ms)",
+              "p95_msd": "Startup 95% (ms)",
+              "p99": "TTLB p99 (ms)",
+              "p99_latency": "p99 Latency (ms)",
+              "p99_msd": "Startup 99% (ms)",
+              "stddev_msd": "STDDEV Startup (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 18,
+        "w": 24,
+        "x": 0,
+        "y": 124
+      },
+      "id": 39,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "AVG Video Bitrate (kbps)"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "WITH Data AS (\n  SELECT\n    cmcd_key_cid,\n    cmcd_key_br as key_value\n  FROM\n    ${table_name}\n  WHERE\n    $__timeFilter(request_datetime)\n    AND cmcd_key_cid IS NOT NULL\n    AND cmcd_key_ttlb IS NOT NULL\n    AND cmcd_key_ttlb > 0\n    AND cmcd_key_ltc > 0\n    AND cmcd_key_ltc < 15000\n    AND cmcd_key_ot = \"v\"\n    AND (cmcd_key_sta = \"p\" OR cmcd_key_sta = \"s\")    \n    AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n    AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n    AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n    AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\n),\nPercentiles AS (\n  SELECT\n    d.cmcd_key_cid,\n    -- Calculate approximate percentiles for Media start Delay\n    APPROX_QUANTILES(d.key_value, 100) AS quantiles\n  FROM\n    Data d\n  GROUP BY\n    cmcd_key_cid\n)\nSELECT\n  p.cmcd_key_cid AS content_id,\n  -- Extract specific percentiles from the array\n  p.quantiles[OFFSET(25)] AS p25,\n  p.quantiles[OFFSET(35)] AS p35,\n  p.quantiles[OFFSET(50)] AS p50,\n  p.quantiles[OFFSET(75)] AS p75,\n  p.quantiles[OFFSET(95)] AS p95,\n  p.quantiles[OFFSET(99)] AS p99,\n  -- Calculate other stats\n  AVG(ld.key_value) AS key_avg,\n  STDDEV(ld.key_value) AS key_stddev,\n  MIN(ld.key_value) AS key_min,\n  MAX(ld.key_value) AS key_max\nFROM\n  Percentiles p\nJOIN\n  Data ld ON p.cmcd_key_cid = ld.cmcd_key_cid\nGROUP BY\n  p.cmcd_key_cid,\n  p25,\n  p35,\n  p50,\n  p75,\n  p95,\n  p99\nORDER BY\n  p95 DESC",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Video Bitrate distribution by Content ID",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "key_stddev": true
+            },
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "avg_latency": "AVG Latency (ms)",
+              "avg_msd": "AVG Startup (ms)",
+              "content_id": "Content ID",
+              "key_avg": "AVG Video Bitrate (kbps)",
+              "key_max": "MAX Video Bitrate (kbps)",
+              "key_min": "MIN Video Bitrate (kbps)",
+              "key_stddev": "STDDEV Video Bitrate (kbps)",
+              "max_latency": "MAX Latency (ms)",
+              "max_msd": "MAX Startup (ms)",
+              "min_latency": "MIN Latency (ms)",
+              "min_msd": "MIN Startup (ms)",
+              "p25": "Video Bitrate p25 (kbps)",
+              "p25_latency": "p25 Latency (ms)",
+              "p25_msd": "Startup 25% (ms)",
+              "p35": "Video Bitrate p35 (kbps)",
+              "p35_latency": "p35 Latency (ms)",
+              "p35_msd": "Startup 35% (ms)",
+              "p50": "Video Bitrate p50 (kbps)",
+              "p50_latency": "p50 Latency (ms)",
+              "p50_msd": "Startup 50% (ms)",
+              "p75": "Video Bitrate p75 (kbps)",
+              "p75_latency": "p75 Latency (ms)",
+              "p75_msd": "Startup 75% (ms)",
+              "p95": "Video Bitrate p95 (kbps)",
+              "p95_latency": "p95 Latency (ms)",
+              "p95_msd": "Startup 95% (ms)",
+              "p99": "Video Bitrate p99 (kbps)",
+              "p99_latency": "p99 Latency (ms)",
+              "p99_msd": "Startup 99% (ms)",
+              "stddev_msd": "STDDEV Startup (ms)"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
+          },
+          "displayName": "Media start delay",
+          "fieldMinMax": false,
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 142
+      },
+      "id": 11,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_msd)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_sid IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')\nGROUP BY\n  cmcd_key_sid\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_mtp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "request_datetime",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Startup Time Histogram",
+      "type": "histogram"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 142
+      },
+      "id": 28,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  MIN(cmcd_key_msd) AS min_media_start_delay,\n  AVG(cmcd_key_msd) AS avg_media_start_delay,\n  MAX(cmcd_key_msd) AS max_media_start_delay \nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_msd",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "Startup Time (MIN, AVG, MAX)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 150
+      },
+      "id": 9,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": []
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "cmcd",
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  ANY_VALUE(cmcd_key_url_domain),\n  AVG(cmcd_key_ttfb),\n  AVG(cmcd_key_ttlb),\n  AVG(cmcd_key_mtp),\n  COUNTIF( (cmcd_key_bs IS TRUE OR cmcd_key_sta = \"r\") AND cmcd_key_su IS NOT TRUE AND cmcd_key_ot = \"v\"),\n  COUNT(DISTINCT cmcd_key_sid)\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_url_domain IS NOT NULL\n  AND cmcd_key_ltc > 0 \n  AND cmcd_key_ltc < 15000  \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  cmcd_key_url_domain",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_url_domain",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_ttfb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_ttlb",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "AVG",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_mtp",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              },
+              {
+                "name": "ANY_VALUE",
+                "parameters": [
+                  {
+                    "name": "cmcd_key_sid",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "name": "cmcd_key_url_domain",
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          },
+          "table": "cmcd"
+        }
+      ],
+      "title": "CDN Performance",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {},
+            "includeByName": {},
+            "indexByName": {},
+            "renameByName": {
+              "f0_": "CDN",
+              "f1_": "AVG ttfb (ms)",
+              "f2_": "AVG ttlb (ms)",
+              "f3_": "AVG Throughput (kbps)",
+              "f4_": "#Rebuffers",
+              "f5_": "#Sessions"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "%"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 161
+      },
+      "id": 30,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 200 AND cmcd_key_rc < 300) * 100.0, COUNT(*)) AS HTTP_Success,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 400 AND cmcd_key_rc < 500) * 100.0, COUNT(*)) AS HTTP_Client_Error,\n  SAFE_DIVIDE(COUNTIF(cmcd_key_rc >= 500 AND cmcd_key_rc < 600) * 100.0, COUNT(*)) AS HTTP_Server_Error\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_rc IS NOT NULL\n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "CDN HTTP Response Codes (%)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "grafana-bigquery-datasource",
+        "uid": "P67060240DC0051B8"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "avg_ttfb"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 168
+      },
+      "id": 31,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-bigquery-datasource",
+            "uid": "P67060240DC0051B8"
+          },
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  $__timeGroup(request_datetime, '$time_aggregate') AS time,\n  AVG(cmcd_key_ttfb) AS avg_ttfb,\n  MIN(cmcd_key_ttfb) AS min_ttfb,\n  MAX(cmcd_key_ttfb) AS max_ttfb\nFROM\n  ${table_name}\nWHERE\n  $__timeFilter(request_datetime)\n  AND cmcd_key_ttfb IS NOT NULL\n  AND cmcd_key_ltc > 0\n  AND cmcd_key_ltc < 15000  \n  AND ('${cmcd_key_cid:raw}' = '__all__' OR cmcd_key_cid = '${cmcd_key_cid:raw}')\n  AND ('${cmcd_key_sid:raw}' = '__all__' OR cmcd_key_sid = '${cmcd_key_sid:raw}')\n  AND ('${request_country_code:raw}' = '__all__' OR request_country_code = '${request_country_code:raw}')\n  AND ('${request_browser_name:raw}' = '__all__' OR request_browser_name = '${request_browser_name:raw}')  \nGROUP BY\n  time\nORDER BY\n  time",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "CDN Time to First Byte",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "allValue": "__all__",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-bigquery-datasource",
+          "uid": "P67060240DC0051B8"
+        },
+        "definition": "",
+        "description": "Filter by content id",
+        "includeAll": true,
+        "label": "Content ID",
+        "name": "cmcd_key_cid",
+        "options": [],
+        "query": {
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  DISTINCT cmcd_key_cid \nFROM \n  ${table_name} \nWHERE \n  $__timeFilter(request_datetime) -- Filters data based on the Grafana dashboard's time range\n  AND cmcd_key_cid IS NOT NULL \nORDER BY \n  cmcd_key_cid\n",
+          "refId": "tempvar",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allValue": "__all__",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-bigquery-datasource",
+          "uid": "P67060240DC0051B8"
+        },
+        "definition": "",
+        "description": "Filter content by session ID",
+        "includeAll": true,
+        "label": "Session ID",
+        "name": "cmcd_key_sid",
+        "options": [],
+        "query": {
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  DISTINCT cmcd_key_sid \nFROM \n  ${table_name} \nWHERE \n  $__timeFilter(request_datetime) -- Filters data based on the Grafana dashboard's time range\n  AND cmcd_key_sid IS NOT NULL \nORDER BY \n  cmcd_key_sid\n",
+          "refId": "tempvar",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allValue": "__all__",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-bigquery-datasource",
+          "uid": "P67060240DC0051B8"
+        },
+        "definition": "",
+        "description": "Filter by Country Code",
+        "includeAll": true,
+        "label": "Country Code",
+        "name": "request_country_code",
+        "options": [],
+        "query": {
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT DISTINCT request_country_code FROM ${table_name} WHERE $__timeFilter(request_datetime) AND request_country_code IS NOT NULL ORDER BY request_country_code\n",
+          "refId": "tempvar",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "allValue": "__all__",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "grafana-bigquery-datasource",
+          "uid": "P67060240DC0051B8"
+        },
+        "definition": "",
+        "description": "Filter by Browser Name",
+        "includeAll": true,
+        "label": "Browser Name",
+        "name": "request_browser_name",
+        "options": [],
+        "query": {
+          "editorMode": "code",
+          "format": 1,
+          "location": "",
+          "project": "ibc-2025-low-latency",
+          "rawQuery": true,
+          "rawSql": "SELECT DISTINCT request_browser_name FROM ${table_name} WHERE  $__timeFilter(request_datetime) AND request_browser_name IS NOT NULL ORDER BY request_browser_name",
+          "refId": "tempvar",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [
+                  {
+                    "name": "*",
+                    "type": "functionParameter"
+                  }
+                ],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        "refresh": 2,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "ibc-2025-low-latency.cmcd.cmcd",
+          "value": "ibc-2025-low-latency.cmcd.cmcd"
+        },
+        "hide": 2,
+        "label": "Table Name",
+        "name": "table_name",
+        "query": "ibc-2025-low-latency.cmcd.cmcd",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
+        "auto": true,
+        "auto_count": 30,
+        "auto_min": "10s",
+        "current": {
+          "text": "$__auto",
+          "value": "$__auto"
+        },
+        "description": "",
+        "label": "Time aggregate",
+        "name": "time_aggregate",
+        "options": [
+          {
+            "selected": false,
+            "text": "1s",
+            "value": "1s"
+          },
+          {
+            "selected": false,
+            "text": "5s",
+            "value": "5s"
+          },
+          {
+            "selected": false,
+            "text": "10s",
+            "value": "10s"
+          },
+          {
+            "selected": false,
+            "text": "30s",
+            "value": "30s"
+          },
+          {
+            "selected": false,
+            "text": "1m",
+            "value": "1m"
+          },
+          {
+            "selected": false,
+            "text": "10m",
+            "value": "10m"
+          }
+        ],
+        "query": "1s,5s,10s,30s,1m,10m",
+        "refresh": 2,
+        "type": "interval"
+      }
+    ]
+  },
+  "time": {
+    "from": "2025-10-10T03:00:00.000Z",
+    "to": "2025-10-12T02:59:59.000Z"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "CMCD for Research",
+  "uid": "f9b58a07-c80a-4182-b693-2d32a10d02db",
+  "version": 41
+}
